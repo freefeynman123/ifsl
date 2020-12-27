@@ -8,6 +8,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
+MAML_MN_FT/downloads_copy/
+MAML_MN_FT/downloads/
+ckpts/
+scripts/Mini-ImageNet/
 
 # C extensions
 *.so

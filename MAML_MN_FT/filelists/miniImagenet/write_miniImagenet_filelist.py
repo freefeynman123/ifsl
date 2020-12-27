@@ -5,14 +5,15 @@ import os
 import json
 import random
 import re
+import pdb
 
 cwd = os.getcwd() 
-data_path = '/data2/yuezhongqi/Dataset/imagenet/ILSVRC/Data/CLS-LOC/train'
+data_path = '/nas/people/lukasz_bala/reproducibility/ifsl/MAML_MN_FT/downloads/mini_imagenet'
 savedir = './'
 dataset_list = ['base', 'val', 'novel']
 
-# if not os.path.exists(savedir):
-#    os.makedirs(savedir)
+if not os.path.exists(savedir):
+   os.makedirs(savedir)
 
 cl = -1
 folderlist = []
@@ -28,13 +29,13 @@ for dataset in dataset_list:
             if i == 0:
                 continue
             fid, _, label = re.split(',|\.', line)
-            label = label.replace('\n', '')
+            label = label.replace('\n', '') 
             
             if label not in filelists[dataset]:
                 folderlist.append(label)
                 filelists[dataset][label] = []
                 fnames = listdir(join(data_path, label))
-                fname_number = [ int(re.split('_|\.', fname)[1]) for fname in fnames]
+                fname_number = [ int(fname.split('.')[0]) for fname in fnames]
                 sorted_fnames = list(zip( *sorted(  zip(fnames, fname_number), key = lambda f_tuple: f_tuple[1] )))[0]
                  
             fid = int(fid[-5:])-1

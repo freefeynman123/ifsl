@@ -9,7 +9,7 @@ from torchvision import datasets, transforms
 
 
 cwd = os.getcwd() 
-data_path = "/data2/yuezhongqi/Dataset/tiered"
+data_path = '/nas/people/lukasz_bala/reproducibility/ifsl/MAML_MN_FT/downloads/tiered_imagenet'
 savedir = './'
 dataset_list = ['base','val','novel']
 
