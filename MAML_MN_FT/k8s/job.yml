@@ -1,0 +1,48 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Job name
+  name: few-shot.lukaszbala.${JOB_NAME}
+spec:
+  # Specify how many times a pod should be restarted in case of failure
+  backoffLimit: 3
+  template:
+    metadata:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        # To run pod as given user and group and making all created files accessible
+        runAsUser: 1000
+        fsGroup: 100
+      # Pod priority level: available levels are on KB
+      priorityClassName: high
+      containers:
+        # Here go all containers that run within this pod
+        - name: few-shot-learning
+          # Required docker image
+          image: registry.gitlab.com/lukasz.bala.tcl/ifsl:latest
+          # To prevent crash after start
+          command: ["/bin/bash", "-c", "$COMMAND"]
+          resources:
+            limits:
+              cpu: "4"
+              memory: "16Gi"
+              nvidia.com/gpu: 1
+            requests:
+              cpu: "4"
+              memory: "16Gi"
+              nvidia.com/gpu: 1
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            # Mount for NAS
+            - mountPath: "/nas"
+              name: nas-local
+      imagePullSecrets:
+        # For accessing gitlab's docker registry
+        - name: gitlab-auth
+      volumes:
+        - name: nas-local
+          hostPath:
+            path: /nas
+            type: Directory

@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  # Pod name
+  name: few-shot.lukaszbala.{POD_NAME}
+spec:
+  securityContext:
+    # To run pod as given user and group and making all created files accessibl
+    runAsUser: 1000
+    fsGroup: 100
+  # Pod priority level: available levels are on KB
+  priorityClassName: high
+  containers:
+    # Here go all containers that run within this pod
+    - name: few-shot-learning
+      # Required docker image
+      image: registry.gitlab.com/lukasz.bala.tcl/ifsl
+      # Here you can put your command
+      # Currently pod will enter infinite sleep loop:
+      command: ["/bin/bash", "-ec", "echo 'started pod'; while :; do sleep 3600; done"]
+      resources:
+        requests:
+          cpu: "4"
+          memory: "16Gi"
+        limits:
+          cpu: "4"
+          memory: "16Gi"
+          nvidia.com/gpu: 1
+      volumeMounts:
+        # Mount for NAS
+        - mountPath: "/nas"
+          name: nas-local
+  imagePullSecrets:
+    # For accessing gitlab's docker registry
+    - name: gitlab-auth
+  volumes:
+    - name: nas-local
+      hostPath:
+        path: /nas
+        type: Directory
