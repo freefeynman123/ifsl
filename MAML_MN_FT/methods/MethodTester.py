@@ -65,7 +65,7 @@ class MethodTester():
             split_str = split
 
         # defaut split = novel, but you can also test base or val classes
-        novel_file = os.path.join(checkpoint_dir.replace("checkpoints", "features"), split_str + ".hdf5")
+        novel_file = os.path.join(checkpoint_dir.replace("checkpoints", "features"), split_str + ".pth.tar")
         
         if params.dataset == "cross":
             novel_file = novel_file.replace("miniImagenet", "cross")
@@ -80,8 +80,8 @@ class MethodTester():
             self.image_size = 80
 
     def simpleshot_initialize(self, params, provide_original_image):
-        novel_file = '%s/features/%s/%s/novel.hdf5' % (configs.simple_shot_dir, params.dataset, params.model)
-        # novel_file = "/model/1154027137/ifsl_features/features/" + params.method + "_" + params.dataset + "_novel.hdf5"
+        novel_file = '%s/features/%s/%s/novel.pth.tar' % (configs.simple_shot_dir, params.dataset, params.model)
+        # novel_file = "/model/1154027137/ifsl_features/features/" + params.method + "_" + params.dataset + "_novel.pth.tar"
         image_file_path = "img_paths_%s_%s_%s.npy" % (params.dataset, params.model, params.method)
         if provide_original_image:
             self.cl_data_file, self.path_data_file = feat_loader.init_loader(novel_file, provide_original_image, image_file_path)
@@ -90,8 +90,8 @@ class MethodTester():
         self.image_size = 84
 
     def feat_initialize(self, params, provide_original_image):
-        novel_file = '%s/features/%s/%s/novel.hdf5' % (configs.feat_dir, params.dataset, params.model)
-        # novel_file = "/model/1154027137/ifsl_features/features/" + params.method + "_" + params.dataset + "_novel.hdf5"
+        novel_file = '%s/features/%s/%s/novel.pth.tar' % (configs.feat_dir, params.dataset, params.model)
+        # novel_file = "/model/1154027137/ifsl_features/features/" + params.method + "_" + params.dataset + "_novel.pth.tar"
         image_file_path = "img_paths_%s_%s_%s.npy" % (params.dataset, params.model, params.method)
         if provide_original_image:
             self.cl_data_file, self.path_data_file = feat_loader.init_loader(novel_file, provide_original_image, image_file_path)
@@ -100,7 +100,7 @@ class MethodTester():
         self.image_size = 84
 
     def sib_initialize(self, params, provide_original_image):
-        novel_file = '%s/features/%s/%s/novel.hdf5' % (configs.sib_dir, params.dataset, params.model)
+        novel_file = '%s/features/%s/%s/novel.pth.tar' % (configs.sib_dir, params.dataset, params.model)
         image_file_path = "img_paths_%s_%s_%s.npy" % (params.dataset, params.model, params.method)
         if provide_original_image:
             self.cl_data_file, self.path_data_file = feat_loader.init_loader(novel_file, provide_original_image, image_file_path)
