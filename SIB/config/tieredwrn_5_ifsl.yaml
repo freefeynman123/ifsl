@@ -19,7 +19,7 @@ expName: tiered
 nbIter: 50000 # number of training iterations
 seed: 100 # can be reset with --seed
 gpu: '3' # can be reset with --gpu
-resumeFeatPth: '/data2/yuezhongqi/Model/sib/pretrain/ckpts/Mini-ImageNet/netFeatBest64.653.pth'
+resumeFeatPth: '/nas/people/lukasz_bala/reproducibility/ifsl/downloads/mini_imagenet/ckpts/Mini-ImageNet/netFeatBest64.653.pth'
 coeffGrad: 0 # grad loss coeff
 
 # Testing
