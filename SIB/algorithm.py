@@ -22,10 +22,13 @@ from utils.utils import to_device
 from PretrainedModel import PretrainedModel
 import numpy as np
 
+import wandb
+
 
 class Params:
     def __init__(self):
         self.dummy = True
+
 
 class Algorithm:
     """
@@ -43,6 +46,7 @@ class Algorithm:
     :param criterion: loss
     :type criterion: nn.CrossEntropyLoss
     """
+
     def __init__(self, args, logger, netFeat, netSIB, optimizer, criterion, pretrain=None):
         self.netFeat = netFeat
         self.netSIB = netSIB
@@ -81,6 +85,9 @@ class Algorithm:
         # dfsl pretrain
         self.pretrain = pretrain
 
+        wandb.init(project=args.project_name)
+        wandb.config.update(args)
+
     def load_ckpt(self, ckptPth):
         """
         Load checkpoint from ckptPth.
@@ -92,7 +99,7 @@ class Algorithm:
         self.netFeat.load_state_dict(param['netFeat'])
         self.netSIB.load_state_dict(param['SIB'])
         lr = param['lr']
-        self.optimizer = torch.optim.SGD(itertools.chain(*[self.netSIB.parameters(),]),
+        self.optimizer = torch.optim.SGD(itertools.chain(*[self.netSIB.parameters(), ]),
                                          lr,
                                          momentum=self.momentum,
                                          weight_decay=self.weightDecay,
@@ -100,26 +107,28 @@ class Algorithm:
         msg = '\nLoading networks from {}'.format(ckptPth)
         self.logger.info(msg)
 
-
     def compute_grad_loss(self, clsScore, QueryLabel):
         """
         Compute the loss between true gradients and synthetic gradients.
         """
+
         # register hooks
         def require_nonleaf_grad(v):
             def hook(g):
                 v.grad_nonleaf = g
+
             h = v.register_hook(hook)
             return h
+
         handle = require_nonleaf_grad(clsScore)
 
         loss = self.criterion(clsScore, QueryLabel)
-        loss.backward(retain_graph=True) # need to backward again
+        loss.backward(retain_graph=True)  # need to backward again
 
         # remove hook
         handle.remove()
 
-        gradLogit = self.netSIB.dni(clsScore) # B * n x nKnovel
+        gradLogit = self.netSIB.dni(clsScore)  # B * n x nKnovel
         gradLoss = F.mse_loss(gradLogit, clsScore.grad_nonleaf.detach())
 
         return loss, gradLoss
@@ -200,26 +209,27 @@ class Algorithm:
         top1 = AverageMeter()
 
         self.netFeat.eval()
-        #self.netSIB.eval() # set train mode, since updating bn helps to estimate better gradient
+        # self.netSIB.eval() # set train mode, since updating bn helps to estimate better gradient
 
         if lr is None:
             lr = self.optimizer.param_groups[0]['lr']
 
-        #for batchIdx, data in enumerate(valLoader):
+        # for batchIdx, data in enumerate(valLoader):
         # nEpisode = 1
         for batchIdx in range(nEpisode):
             data = valLoader.getEpisode() if mode == 'test' else next(valLoader)
             data = to_device(data, self.device)
 
             SupportTensor, SupportLabel, QueryTensor, QueryLabel = \
-                    data['SupportTensor'].squeeze(0), data['SupportLabel'].squeeze(0), \
-                    data['QueryTensor'].squeeze(0), data['QueryLabel'].squeeze(0)
+                data['SupportTensor'].squeeze(0), data['SupportLabel'].squeeze(0), \
+                data['QueryTensor'].squeeze(0), data['QueryLabel'].squeeze(0)
 
             with torch.no_grad():
                 # SupportFeat, QueryFeat = self.netFeat(SupportTensor), self.netFeat(QueryTensor)
-                SupportFeat, QueryFeat = self.pretrain.get_features(SupportTensor), self.pretrain.get_features(QueryTensor)
+                SupportFeat, QueryFeat = self.pretrain.get_features(SupportTensor), self.pretrain.get_features(
+                    QueryTensor)
                 SupportFeat, QueryFeat, SupportLabel = \
-                        SupportFeat.unsqueeze(0), QueryFeat.unsqueeze(0), SupportLabel.unsqueeze(0)
+                    SupportFeat.unsqueeze(0), QueryFeat.unsqueeze(0), SupportLabel.unsqueeze(0)
 
             clsScore = self.netSIB(SupportFeat, SupportLabel, QueryFeat, lr)
             clsScore = clsScore.view(QueryFeat.shape[0] * QueryFeat.shape[1], -1)
@@ -236,7 +246,9 @@ class Algorithm:
 
             if self.davg:
                 # diff_scores = self.calc_diff_scores(self.pretrain, SupportFeat.squeeze(0), QueryFeat.squeeze(0), SupportLabel.squeeze(0), QueryLabel)  # cosine similarity
-                diff_scores = self._evaluate_hardness_logodd(self.pretrain, SupportFeat.squeeze(0), QueryFeat.squeeze(0), SupportLabel.squeeze(0), QueryLabel)  # logodd
+                diff_scores = self._evaluate_hardness_logodd(self.pretrain, SupportFeat.squeeze(0),
+                                                             QueryFeat.squeeze(0), SupportLabel.squeeze(0),
+                                                             QueryLabel)  # logodd
             else:
                 diff_scores = None
             acc1 = accuracy(clsScore, QueryLabel, topk=(1,), diff_scores=diff_scores)
@@ -257,7 +269,7 @@ class Algorithm:
         with open(output_file, "a") as f:
             f.write(message)
 
-    def train(self, trainLoader, valLoader, lr=None, coeffGrad=0.0) :
+    def train(self, trainLoader, valLoader, lr=None, coeffGrad=0.0):
         """
         Run one epoch on train-set.
 
@@ -268,23 +280,24 @@ class Algorithm:
         :param float lr: learning rate for synthetic GD
         :param float coeffGrad: deprecated
         """
+        wandb.watch(self.pretrain.model)
         bestAcc, ci = self.validate(valLoader, lr, 'test')
-        self.logger.info('Acc improved over validation set from 0% ---> {:.3f} +- {:.3f}%'.format(bestAcc,ci))
+        self.logger.info('Acc improved over validation set from 0% ---> {:.3f} +- {:.3f}%'.format(bestAcc, ci))
 
         self.netSIB.train()
         self.netFeat.eval()
 
         losses = AverageMeter()
         top1 = AverageMeter()
-        history = {'trainLoss' : [], 'trainAcc' : [], 'valAcc' : []}
+        history = {'trainLoss': [], 'trainAcc': [], 'valAcc': []}
 
         for episode in range(self.nbIter):
             data = trainLoader.getBatch()
             data = to_device(data, self.device)
 
-            with torch.no_grad() :
+            with torch.no_grad():
                 SupportTensor, SupportLabel, QueryTensor, QueryLabel = \
-                        data['SupportTensor'], data['SupportLabel'], data['QueryTensor'], data['QueryLabel']
+                    data['SupportTensor'], data['SupportLabel'], data['QueryTensor'], data['QueryLabel']
                 nC, nH, nW = SupportTensor.shape[2:]
 
                 # SupportFeat = self.netFeat(SupportTensor.reshape(-1, nC, nH, nW))
@@ -310,7 +323,7 @@ class Algorithm:
                 singleScore = self.netSIB(SupportFeat, SupportLabel, QueryFeat[:, i, :].unsqueeze(1), lr)
                 clsScore[i] = singleScore[0][0]
             '''
-                
+
             QueryLabel = QueryLabel.view(-1)
 
             if coeffGrad > 0:
@@ -322,7 +335,7 @@ class Algorithm:
             loss.backward()
             self.optimizer.step()
 
-            acc1 = accuracy(clsScore, QueryLabel, topk=(1, ))
+            acc1 = accuracy(clsScore, QueryLabel, topk=(1,))
             top1.update(acc1[0].item(), clsScore.shape[0])
             losses.update(loss.item(), QueryFeat.shape[1])
             msg = 'Loss: {:.3f} | Top1: {:.3f}% '.format(losses.avg, top1.avg)
@@ -330,32 +343,34 @@ class Algorithm:
                 msg = msg + '| gradLoss: {:.3f}%'.format(gradLoss.item())
             progress_bar(episode, self.nbIter, msg)
 
-            if episode % 1000 == 999 :
+            if episode % 1000 == 999:
                 acc, _ = self.validate(valLoader, lr, 'test')
 
-                if acc > bestAcc :
-                    msg = 'Acc improved over validation set from {:.3f}% ---> {:.3f}%'.format(bestAcc , acc)
+                if acc > bestAcc:
+                    msg = 'Acc improved over validation set from {:.3f}% ---> {:.3f}%'.format(bestAcc, acc)
                     self.logger.info(msg)
 
                     bestAcc = acc
                     self.logger.info('Saving Best')
                     torch.save({
-                                'lr': lr,
-                                'netFeat': self.netFeat.state_dict(),
-                                'SIB': self.netSIB.state_dict(),
-                                'nbStep': self.nStep,
-                                }, os.path.join(self.outDir, 'netSIBBest.pth'))
+                        'lr':      lr,
+                        'netFeat': self.netFeat.state_dict(),
+                        'SIB':     self.netSIB.state_dict(),
+                        'nbStep':  self.nStep,
+                    }, os.path.join(self.outDir, 'netSIBBest.pth'))
 
                 self.logger.info('Saving Last')
                 torch.save({
-                            'lr': lr,
-                            'netFeat': self.netFeat.state_dict(),
-                            'SIB': self.netSIB.state_dict(),
-                            'nbStep': self.nStep,
-                            }, os.path.join(self.outDir, 'netSIBLast.pth'))
+                    'lr':      lr,
+                    'netFeat': self.netFeat.state_dict(),
+                    'SIB':     self.netSIB.state_dict(),
+                    'nbStep':  self.nStep,
+                }, os.path.join(self.outDir, 'netSIBLast.pth'))
 
                 msg = 'Iter {:d}, Train Loss {:.3f}, Train Acc {:.3f}%, Val Acc {:.3f}%, Best Acc {:.3f}'.format(
-                        episode, losses.avg, top1.avg, acc, bestAcc)
+                    episode, losses.avg, top1.avg, acc, bestAcc)
+                wandb.log({"Iter":     episode, "train_loss": losses.avg, "train_acc": top1.avg, "val_acc": acc,
+                           "best_acc": bestAcc})
                 self.logger.info(msg)
                 self.write_output_message(msg)
                 history['trainLoss'].append(losses.avg)

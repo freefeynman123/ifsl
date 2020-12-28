@@ -97,6 +97,11 @@ def get_args():
         '--ckpt',
         default=None,
         help='The path to ckpt')
+    argparser.add_argument(
+        '--project_name',
+        default='sib_baseline',
+        help='Project name for weights and biases.'
+    )
     args = argparser.parse_args()
     return args
 
