@@ -157,7 +157,7 @@ class PretrainedModel():
             dataset = self.params.dataset
         trainTransform, valTransform, inputW, inputH, \
             trainDir, valDir, testDir, episodeJson, nbCls = dataset_setting(dataset, 1, self.image_size)
-        base_loader = TrainLoader(self.batch_size, trainDir, trainTransform)
+        base_loader = TrainLoader(self.batch_size, trainDir, trainTransform, num_workers=num_workers)
         loss_fn = nn.CrossEntropyLoss()
         params = self.clfs.parameters()
         optimizer = torch.optim.Adam(params)

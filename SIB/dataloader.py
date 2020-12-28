@@ -225,16 +225,16 @@ class ValImageFolder(data.Dataset):
         return self.nEpisode
 
 
-def ValLoader(episodeJson, imgDir, inputW, inputH, valTransform, useGPU) :
+def ValLoader(episodeJson, imgDir, inputW, inputH, valTransform, useGPU, num_workers) :
     dataloader = data.DataLoader(ValImageFolder(episodeJson, imgDir, inputW, inputH,
                                                 valTransform, useGPU),
-                                 shuffle=False)
+                                 shuffle=False, num_workers=num_workers)
     return dataloader
 
 
-def TrainLoader(batchSize, imgDir, trainTransform) :
+def TrainLoader(batchSize, imgDir, trainTransform, num_workers) :
     dataloader = data.DataLoader(ImageFolder(imgDir, trainTransform),
-                                 batch_size=batchSize, shuffle=True, drop_last=True)
+                                 batch_size=batchSize, shuffle=True, drop_last=True, num_workers=num_workers)
     return dataloader
 
 

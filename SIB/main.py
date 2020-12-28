@@ -107,6 +107,7 @@ params = Params()
 params.dataset = args.p_dataset
 params.method = args.p_method
 params.model = args.p_model
+params.num_workers = args.num_workers
 params.num_classes = nbCls
 pretrain = PretrainedModel(params)
 pretrain.netFeat = netFeat

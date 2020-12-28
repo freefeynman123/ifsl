@@ -102,6 +102,12 @@ def get_args():
         default='sib_baseline',
         help='Project name for weights and biases.'
     )
+    argparser.add_argument(
+        '--num_workers',
+        default=0,
+        type=int,
+        help='Number of workers for dataloader.'
+    )
     args = argparser.parse_args()
     return args
 
@@ -131,6 +137,7 @@ def get_config():
     config.test = False if args.ckpt is None else True
     config.ckptPth = args.ckpt
     config.project_name = args.project_name
+    config.num_workers = args.num_workers
 
     # create directories
     config.cacheDir = os.path.join("/nas/people/lukasz_bala/reproducibility/ifsl/SIB/cache", '{}_{}shot_K{}_seed{}_{}'.format(
