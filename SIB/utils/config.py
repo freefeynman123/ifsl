@@ -130,6 +130,7 @@ def get_config():
     config.gpu = args.gpu
     config.test = False if args.ckpt is None else True
     config.ckptPth = args.ckpt
+    config.project_name = args.project_name
 
     # create directories
     config.cacheDir = os.path.join("/nas/people/lukasz_bala/reproducibility/ifsl/SIB/cache", '{}_{}shot_K{}_seed{}_{}'.format(
