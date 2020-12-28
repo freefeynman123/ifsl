@@ -127,7 +127,7 @@ def get_config():
     config.ckptPth = args.ckpt
 
     # create directories
-    config.cacheDir = os.path.join("/data2/yuezhongqi/Model/sib/cache", '{}_{}shot_K{}_seed{}_{}'.format(
+    config.cacheDir = os.path.join("/nas/people/lukasz_bala/reproducibility/ifsl/SIB/cache", '{}_{}shot_K{}_seed{}_{}'.format(
         config.expName, config.nSupport, config.nStep, config.seed, config.name))
     config.logDir = os.path.join(config.cacheDir, 'logs')
     config.outDir = os.path.join(config.cacheDir, 'outputs')

@@ -72,8 +72,8 @@ def dataset_setting(dataset, nSupport, image_size=80):
         trainDir = '/nas/people/lukasz_bala/reproducibility/ifsl/downloads/tiered_imagenet/train/'
         valDir = '/nas/people/lukasz_bala/reproducibility/ifsl/downloads/tiered_imagenet/val/'
         testDir = '/nas/people/lukasz_bala/reproducibility/ifsl/downloads/tiered_imagenet/test/'
-        episodeJson = '/data2/yuezhongqi/Model/sib/pretrain/data/val1000Episode_5_way_1_shot.json' if nSupport == 1 \
-            else '/data2/yuezhongqi/Model/sib/pretrain/data/val1000Episode_5_way_5_shot.json'
+        episodeJson = '/nas/people/lukasz_bala/reproducibility/ifsl/downloads/tiered_imagenet/val1000Episode_5_way_1_shot.json' if nSupport == 1 \
+            else '/nas/people/lukasz_bala/reproducibility/ifsl/downloads/tiered_imagenet/val1000Episode_5_way_5_shot.json'
     elif dataset == 'Cifar':
         mean = [x / 255.0 for x in [129.37731888, 124.10583864, 112.47758569]]
         std = [x / 255.0 for x in [68.20947949, 65.43124043, 70.45866994]]
