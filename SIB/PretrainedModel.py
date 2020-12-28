@@ -32,6 +32,7 @@ class PretrainedModel():
             self.feat_init(params)
         elif self.method in ["sib"]:
             self.sib_init(params)
+        self.num_workers = params.num_workers
         # self.train_d_specific_classifiers(8)
         # self.train_d_specific_classifiers(16)
         # self.load_d_specific_classifiers(10)
@@ -157,7 +158,7 @@ class PretrainedModel():
             dataset = self.params.dataset
         trainTransform, valTransform, inputW, inputH, \
             trainDir, valDir, testDir, episodeJson, nbCls = dataset_setting(dataset, 1, self.image_size)
-        base_loader = TrainLoader(self.batch_size, trainDir, trainTransform, num_workers=num_workers)
+        base_loader = TrainLoader(self.batch_size, trainDir, trainTransform, num_workers=self.num_workers)
         loss_fn = nn.CrossEntropyLoss()
         params = self.clfs.parameters()
         optimizer = torch.optim.Adam(params)
@@ -277,7 +278,7 @@ class PretrainedModel():
             dataset = "miniImageNet"
         trainTransform, valTransform, inputW, inputH, \
             trainDir, valDir, testDir, episodeJson, nbCls = dataset_setting(dataset, 1, self.image_size)
-        base_loader = TrainLoader(self.batch_size, trainDir, valTransform)
+        base_loader = TrainLoader(self.batch_size, trainDir, valTransform, num_workers=self.num_workers)
 
         features = np.zeros((self.num_classes, self.feat_dim))
         counts = np.zeros(self.num_classes)
