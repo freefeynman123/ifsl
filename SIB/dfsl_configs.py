@@ -1,3 +1,3 @@
-save_dir                    = '/data2/yuezhongqi/Model/CloserLookFSL/'
-simple_shot_dir = "/data2/yuezhongqi/Model/simple_shot/"
+save_dir                    = '/nas/people/lukasz_bala/reproducibility/ifsl/SIB/reproduce/'
+simple_shot_dir = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/"
 results_dir =  "results"
