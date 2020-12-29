@@ -280,7 +280,7 @@ class Algorithm:
         :param float lr: learning rate for synthetic GD
         :param float coeffGrad: deprecated
         """
-        wandb.watch(self.pretrain.model)
+        wandb.watch(self.pretrain.model, log='all')
         bestAcc, ci = self.validate(valLoader, lr, 'test')
         self.logger.info('Acc improved over validation set from 0% ---> {:.3f} +- {:.3f}%'.format(bestAcc, ci))
 
