@@ -21,6 +21,12 @@ spec:
         - name: few-shot-learning
           # Required docker image
           image: registry.gitlab.com/lukasz.bala.tcl/ifsl:sib
+          env:
+            - name: WANDB_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: wandbsecret
+                  key: password
           # To prevent crash after start
           command: ["/bin/bash", "-c", "$COMMAND"]
           resources:

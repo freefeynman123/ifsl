@@ -12,6 +12,8 @@ MAML_MN_FT/downloads_copy/
 MAML_MN_FT/downloads/
 ckpts/
 scripts/Mini-ImageNet/
+*wandb_secret*
+*wandb_kubernetes*
 
 # C extensions
 *.so
