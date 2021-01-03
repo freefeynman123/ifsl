@@ -14,7 +14,7 @@ from models.IFSL_modules import FeatureProcessor
 class PretrainNet():
     def __init__(self, args):
         self.args = args
-        log_base_dir = '/data2/yuezhongqi/Model/mtl/logs/'
+        log_base_dir = '/nas/people/lukasz_bala/reproducibility/ifsl/MTL/logs'
         self.encoder = ResNetMtl(mtl=False)
         if self.args.init_weights is not None:
             pretrained_dict = torch.load(self.args.init_weights)['params']

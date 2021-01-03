@@ -28,9 +28,9 @@ if __name__ == '__main__':
     parser.add_argument('--phase', type=str, default='meta_train', choices=['pre_train', 'meta_train', 'meta_eval', 'meta_cam', 'pretrain_clfs']) # Phase
     parser.add_argument('--seed', type=int, default=0) # Manual seed for PyTorch, "0" means using random seed
     parser.add_argument('--gpu', default='1') # GPU id
-    parser.add_argument('--mini_dataset_dir', type=str, default='/data2/yuezhongqi/Model/sib/pretrain/data/Mini-ImageNet') # Dataset folder
-    parser.add_argument('--tiered_dataset_dir', type=str, default='/data2/yuezhongqi/Dataset/tiered') # Dataset folder
-    parser.add_argument('--cross_dataset_dir', type=str, default='/data2/yuezhongqi/Dataset/CUB_200_2011/images') # Dataset folder
+    parser.add_argument('--mini_dataset_dir', type=str, default='/nas/people/lukasz_bala/reproducibility/ifsl/downloads/mini_imagenet') # Dataset folder
+    parser.add_argument('--tiered_dataset_dir', type=str, default='/nas/people/lukasz_bala/reproducibility/ifsl/downloads/tiered_imagenet') # Dataset folder
+    parser.add_argument('--cross_dataset_dir', type=str, default='/nas/people/lukasz_bala/reproducibility/ifsl/downloads/cub_dataset') # Dataset folder
     # Parameters for meta-train phase
     parser.add_argument('--max_epoch', type=int, default=100) # Epoch number for meta-train phase
     parser.add_argument('--num_batch', type=int, default=100) # The number for different tasks used for meta-train

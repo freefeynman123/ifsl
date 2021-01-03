@@ -20,7 +20,7 @@ class Pretrain():
             param.requires_grad = False
 
     def simpleshot_init(self):
-        simple_shot_dir = "/data2/yuezhongqi/Model/simple_shot/"
+        simple_shot_dir = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models"
         model_name = self.model_name.lower()
         if self.dataset == "tiered":
             self.num_classes = 351

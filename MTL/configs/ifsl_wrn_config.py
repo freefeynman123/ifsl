@@ -13,7 +13,7 @@ def mini_5_wrn_d():
     param.method = "simpleshotwide"
     param.model = "wideres"
     param.deconfound = True
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/miniImagenet/wideres/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/mini/softmax/wideres/model_best.pth.tar"
     param.meta_label = "exp31"
     
     ifsl_params = {
@@ -51,7 +51,7 @@ def mini_1_wrn_d():
     param.method = "simpleshotwide"
     param.model = "wideres"
     param.deconfound = True
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/miniImagenet/wideres/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/mini/softmax/wideres/model_best.pth.tar"
     param.meta_label = "exp32"
     ifsl_params = {
         "classifier": "single",
@@ -89,7 +89,7 @@ def tiered_5_wrn_d():
     param.method = "simpleshotwide"
     param.model = "wideres"
     param.deconfound = True
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/tiered/wideres/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/tiered/wideres/model_best.pth.tar"
     param.meta_label = "tiered_base"
     
     ifsl_params = {
@@ -127,7 +127,7 @@ def tiered_1_wrn_d():
     param.method = "simpleshotwide"
     param.model = "wideres"
     param.deconfound = True
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/tiered/wideres/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/tiered/wideres/model_best.pth.tar"
     param.meta_label = "exp32"
     ifsl_params = {
         "classifier": "single",

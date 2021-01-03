@@ -29,7 +29,7 @@ def run_exp(num_batch=1000, shot=1, query=15, lr1=0.0001, lr2=0.001, base_lr=0.0
         + ' --gpu=' + str(gpu) \
         + ' --base_lr=' + str(base_lr) \
         + ' --update_step=' + str(update_step) \
-        + ' --init_weights=' + "/data2/yuezhongqi/Model/simple_shot/miniImagenet/resnet10/model_best.pth.tar" \
+        + ' --init_weights=' + "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/mini/softmax/resnet10/model_best.pth.tar" \
         + ' --config=' + "mini_5_resnet_ifsl"\
         + ' --meta_label=' + "exp32"
     # + ' --init_weights=' + "/data2/yuezhongqi/Model/mtl/shared/max_acc.pth" \

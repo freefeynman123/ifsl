@@ -13,7 +13,7 @@ def mini_5_resnet_d():
     param.method = "simpleshot"
     param.model = "ResNet10"
     param.deconfound = True
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/miniImagenet/resnet10/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/mini/softmax/resnet10/model_best.pth.tar"
     param.meta_label = "exp31"
     
     ifsl_params = {
@@ -51,7 +51,7 @@ def mini_1_resnet_d():
     param.method = "simpleshot"
     param.model = "ResNet10"
     param.deconfound = True
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/miniImagenet/resnet10/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/mini/softmax/resnet10/model_best.pth.tar"
     param.meta_label = "exp32"
     ifsl_params = {
         "classifier": "single",
@@ -89,7 +89,7 @@ def tiered_5_resnet_d():
     param.method = "simpleshot"
     param.model = "ResNet10"
     param.deconfound = True
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/tiered/resnet10/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/tiered/ResNet10/model_best.pth.tar"
     param.meta_label = "tiered_base"
     
     ifsl_params = {
@@ -127,7 +127,7 @@ def tiered_1_resnet_d():
     param.method = "simpleshot"
     param.model = "ResNet10"
     param.deconfound = True
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/tiered/resnet10/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/tiered/ResNet10/model_best.pth.tar"
     param.meta_label = "exp32"
     ifsl_params = {
         "classifier": "single",

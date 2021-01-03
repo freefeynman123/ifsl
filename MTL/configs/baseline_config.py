@@ -13,7 +13,7 @@ def mini_5_resnet_baseline():
     param.method = "simpleshot"
     param.model = "ResNet10"
     param.deconfound = False
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/miniImagenet/resnet10/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/mini/softmax/resnet10/model_best.pth.tar"
     param.meta_label = "resmini"
     param.dacc = False
     return param
@@ -28,7 +28,7 @@ def mini_1_resnet_baseline():
     param.method = "simpleshot"
     param.model = "ResNet10"
     param.deconfound = False
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/miniImagenet/resnet10/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/mini/softmax/resnet10/model_best.pth.tar"
     param.meta_label = "resmini"
     param.dacc = False
     return param
@@ -43,7 +43,7 @@ def tiered_5_resnet_baseline():
     param.method = "simpleshot"
     param.model = "ResNet10"
     param.deconfound = False
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/tiered/resnet10/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/tiered/ResNet10/model_best.pth.tar"
     param.meta_label = "restiered"
     param.dacc = False
     return param
@@ -58,7 +58,7 @@ def tiered_1_resnet_baseline():
     param.method = "simpleshot"
     param.model = "ResNet10"
     param.deconfound = False
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/tiered/resnet10/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/tiered/ResNet10/model_best.pth.tar"
     param.meta_label = "restiered"
     param.dacc = False
     return param
@@ -73,7 +73,7 @@ def mini_5_wrn_baseline():
     param.method = "simpleshotwide"
     param.model = "wideres"
     param.deconfound = False
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/miniImagenet/wideres/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/mini/softmax/wideres/model_best.pth.tar"
     param.meta_label = "wrnmini"
     param.dacc = False
     return param
@@ -88,7 +88,7 @@ def mini_1_wrn_baseline():
     param.method = "simpleshotwide"
     param.model = "wideres"
     param.deconfound = False
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/miniImagenet/wideres/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/mini/softmax/wideres/model_best.pth.tar"
     param.meta_label = "wrnmini"
     param.dacc = False
     return param
@@ -103,7 +103,7 @@ def tiered_5_wrn_baseline():
     param.method = "simpleshotwide"
     param.model = "wideres"
     param.deconfound = False
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/tiered/wideres/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/tiered/wideres/model_best.pth.tar"
     param.meta_label = "wrntiered"
     param.dacc = False
     return param
@@ -118,7 +118,7 @@ def tiered_1_wrn_baseline():
     param.method = "simpleshotwide"
     param.model = "wideres"
     param.deconfound = False
-    param.init_weights = "/data2/yuezhongqi/Model/simple_shot/tiered/wideres/model_best.pth.tar"
+    param.init_weights = "/nas/people/lukasz_bala/reproducibility/ifsl/downloads/models/results/tiered/wideres/model_best.pth.tar"
     param.meta_label = "wrntiered"
     param.dacc = False
     return param

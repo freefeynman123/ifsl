@@ -43,7 +43,7 @@ class MetaTrainer(object):
         pprint(vars(args))
 
         # Set the folder to save the records and checkpoints
-        log_base_dir = '/data2/yuezhongqi/Model/mtl/logs/'
+        log_base_dir = '/nas/people/lukasz_bala/reproducibility/ifsl/MTL/logs/baseline'
         if not osp.exists(log_base_dir):
             os.mkdir(log_base_dir)
         meta_base_dir = osp.join(log_base_dir, 'meta')
@@ -322,7 +322,7 @@ class MetaTrainer(object):
         else:
             # Load according to config file
             args = self.args
-            base_path = "/data2/yuezhongqi/Model/ifsl/mtl"
+            base_path = "/nas/people/lukasz_bala/reproducibility/ifsl/MTL/logs/ifsl"
             if args.param.dataset == "tiered":
                 add_path = "tiered_"
             else:
