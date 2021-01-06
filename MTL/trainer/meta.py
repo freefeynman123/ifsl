@@ -130,6 +130,8 @@ class MetaTrainer(object):
             file_name = "results"
         # output_file = os.path.join(self.args.save_path, "results.txt")
         output_file = os.path.join("outputs", file_name + ".txt")
+        if not os.path.exists(os.path.dirname(output_file)):
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
         with open(output_file, "a") as f:
             f.write(message + "\n")
         
