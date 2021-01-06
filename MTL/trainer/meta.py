@@ -27,6 +27,8 @@ from utils.misc import pprint
 import pickle
 from utils.misc import progress_bar
 
+import wandb
+
 
 class MetaTrainer(object):
     """The class that contains the code for the meta-train phase and meta-eval phase."""
@@ -60,6 +62,9 @@ class MetaTrainer(object):
 
         # Set args to be shareable in the class
         self.args = args
+
+        wandb.init(project=args.project_name)
+        wandb.config.update(args)
 
         # Load meta-train set
         self.trainset = Dataset('train', self.args, dataset=self.args.param.dataset, train_aug=False)
@@ -290,6 +295,9 @@ class MetaTrainer(object):
             trlog['train_acc'].append(train_acc_averager)
             trlog['val_loss'].append(val_loss_averager)
             trlog['val_acc'].append(val_acc_averager)
+
+            wandb.log({'train_loss': train_loss_averager, 'train_acc': train_acc_averager, 'val_loss': val_loss_averager,
+                       'val_acc': val_acc_averager})
 
             # Save log
             torch.save(trlog, osp.join(self.args.save_path, 'trlog'))

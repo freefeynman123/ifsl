@@ -62,6 +62,7 @@ if __name__ == '__main__':
     parser.add_argument('--config', type=str, default="mini_5_resnet_baseline")
     parser.add_argument('--cross', type=bool, default=False)
     parser.add_argument("--save_hacc", type=bool, default=False)
+    parser.add_argument('--project_name', type=str, default="mtl_baseline")
     # Set and print the parameters
     args = parser.parse_args()
     # pprint(vars(args))
