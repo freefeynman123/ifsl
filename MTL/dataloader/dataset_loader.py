@@ -33,10 +33,7 @@ class DatasetLoader(Dataset):
             label_list = os.listdir(dataset_dir)
         else:
             if setname=='train':
-                if dataset == "miniImagenet":
-                    train_folder = "train_train"
-                else:
-                    train_folder = "train"
+                train_folder = "train"
                 THE_PATH = osp.join(dataset_dir, train_folder)
                 label_list = os.listdir(THE_PATH)
             elif setname=='test':
