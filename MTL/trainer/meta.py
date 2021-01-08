@@ -68,7 +68,7 @@ class MetaTrainer(object):
 
         # Load meta-train set
         self.trainset = Dataset('train', self.args, dataset=self.args.param.dataset, train_aug=False)
-        num_workers = 8
+        num_workers = self.args.num_workers
         if args.debug:
             num_workers = 0
         self.train_sampler = CategoriesSampler(self.trainset.label, self.args.num_batch, self.args.way, self.args.shot + self.args.train_query)
@@ -313,7 +313,7 @@ class MetaTrainer(object):
         # Load the logs
         # trlog = torch.load(osp.join(self.args.save_path, 'trlog'))
 
-        num_workers = 8
+        num_workers = self.args.num_workers
         if self.args.debug:
             num_workers = 0
 

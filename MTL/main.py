@@ -63,6 +63,7 @@ if __name__ == '__main__':
     parser.add_argument('--cross', type=bool, default=False)
     parser.add_argument("--save_hacc", type=bool, default=False)
     parser.add_argument('--project_name', type=str, default="mtl_baseline")
+    parser.add_argument('--num_workers', type=int, default=8)
     # Set and print the parameters
     args = parser.parse_args()
     # pprint(vars(args))
