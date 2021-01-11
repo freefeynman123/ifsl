@@ -9,12 +9,6 @@ from models.resnet_mtl import BasicBlockMtl
 SEED = 42
 random.seed(SEED)
 
-def func(a, b):
-    return a + b + 2
-
-def test_func():
-    assert func(2, 3) == 7
-
 def test_basic_block_same_channels():
     random_tensor = torch.rand(1, 3, 224, 224)
     block = BasicBlockMtl(3, 3)
