@@ -65,7 +65,7 @@ class MtlLearner(nn.Module):
             self.base_learner = BaseLearner(args, z_dim)
         else:
             if args.param.learner == "IFSL":
-                self.base_learner = IFSL(args.way, args.shot, self.pretrain, **args.param.ifsl_params)
+                self.base_learner = IFSLBaseLearner(args.way, args.shot, self.pretrain, **args.param.ifsl_params)
             else:
                 self.base_learner = BaseLearner(args, z_dim)
 

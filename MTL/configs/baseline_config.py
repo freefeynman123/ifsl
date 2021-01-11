@@ -2,7 +2,7 @@ class Params():
     def __init__(self):
         self.is_param = True
 
-# python main.py --config=mini_5_resnet_baseline --gpu=
+# python main.py --config=mini_5_resnet_baseline --gpu=0 --num_workers=16
 def mini_5_resnet_baseline():
     param = Params()
     param.shot = 5

@@ -41,6 +41,8 @@ spec:
           ports:
             - containerPort: 5000
           volumeMounts:
+            - mountPath: /dev/shm
+              name: dshm
             # Mount for NAS
             - mountPath: "/nas"
               name: nas-local
@@ -48,6 +50,9 @@ spec:
         # For accessing gitlab's docker registry
         - name: gitlab-auth
       volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
         - name: nas-local
           hostPath:
             path: /nas
