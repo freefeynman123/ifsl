@@ -32,11 +32,13 @@ class DatasetLoader(Dataset):
             # Cross uses the entire dataset for testing
             THE_PATH = dataset_dir
             label_list = os.listdir(dataset_dir)
+            self.save_artifacts(dataset_name=dataset, folder_name=setname, folder_dir=THE_PATH)
         else:
             if setname=='train':
                 train_folder = "train"
                 THE_PATH = osp.join(dataset_dir, train_folder)
                 label_list = os.listdir(THE_PATH)
+                self.save_artifacts(dataset_name=dataset, folder_name=setname, folder_dir=THE_PATH)
             elif setname=='test':
                 THE_PATH = osp.join(dataset_dir, 'test')
                 label_list = os.listdir(THE_PATH)
@@ -44,6 +46,7 @@ class DatasetLoader(Dataset):
             elif setname=='val':
                 THE_PATH = osp.join(dataset_dir, 'val')
                 label_list = os.listdir(THE_PATH)
+                self.save_artifacts(dataset_name=dataset, folder_name=setname, folder_dir=THE_PATH)
             else:
                 raise ValueError('Wrong setname.') 
 
