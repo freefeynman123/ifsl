@@ -146,7 +146,10 @@ class MetaTrainer(object):
         """
         artifact = wandb.Artifact(type='model', name=self.args.model_type)
         artifact.add_file(osp.join(self.args.save_path, name + '.pth'))
-        run.log_artifact(artifact)
+        if self.args.phase=='meta_train':
+            self.run_train.log_artifact(artifact)
+        elif args.phase=='meta_eval':
+            self.run_eval.log_artifact(artifact)
 
     def train(self):
         """The function for the meta-train phase."""
