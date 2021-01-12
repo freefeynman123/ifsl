@@ -140,7 +140,16 @@ class MetaTrainer(object):
         Args:
           name: the name for saved checkpoint
         """  
-        torch.save(dict(params=self.model.state_dict()), osp.join(self.args.save_path, name + '.pth'))           
+        torch.save(dict(params=self.model.state_dict()), osp.join(self.args.save_path, name + '.pth'))
+
+    def save_artifact(self, name):
+        """Saves artifact for given model name
+        Args:
+            name: the name for saved checkpoint
+        """
+        artifact = wandb.Artifact(type='model', name=self.args.model_type)
+        artifact.add_file(osp.join(self.args.save_path, name + '.pth'))
+        run.log_artifact(artifact)
 
     def train(self):
         """The function for the meta-train phase."""
@@ -288,9 +297,11 @@ class MetaTrainer(object):
                 trlog['max_acc'] = val_acc_averager
                 trlog['max_acc_epoch'] = epoch
                 self.save_model('max_acc')
+                self.save_artifact('max_acc')
             # Save model every 10 epochs
             if epoch % 10 == 0:
                 self.save_model('epoch'+str(epoch))
+                self.save_artifact('epoch'+str(epoch))
 
             # Update the logs
             trlog['train_loss'].append(train_loss_averager)

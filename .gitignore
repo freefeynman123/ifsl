@@ -14,6 +14,7 @@ ckpts/
 scripts/Mini-ImageNet/
 *wandb_secret*
 *wandb_kubernetes*
+*wandb*
 
 # C extensions
 *.so

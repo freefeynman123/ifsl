@@ -15,6 +15,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms
 import numpy as np
+import wandb
 
 
 class DatasetLoader(Dataset):
@@ -39,6 +40,7 @@ class DatasetLoader(Dataset):
             elif setname=='test':
                 THE_PATH = osp.join(dataset_dir, 'test')
                 label_list = os.listdir(THE_PATH)
+                self.save_artifacts(dataset_name=dataset, folder_name=setname, folder_dir=THE_PATH)
             elif setname=='val':
                 THE_PATH = osp.join(dataset_dir, 'val')
                 label_list = os.listdir(THE_PATH)
@@ -92,7 +94,6 @@ class DatasetLoader(Dataset):
                 transforms.CenterCrop(image_size),
                 transforms.ToTensor(),
                 transforms.Normalize(mean, std)])
-
     def __len__(self):
         return len(self.data)
 
@@ -103,3 +104,7 @@ class DatasetLoader(Dataset):
             return image, label
         else:
             return image, label, path
+
+    def save_artifacts(self, dataset_name, folder_name, folder_dir):
+        artifact = wandb.Artifact(name=dataset_name, type='dataset')
+        artifact.add_dir(folder_dir, name=folder_name)
