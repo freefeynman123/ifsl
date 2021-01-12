@@ -26,7 +26,6 @@ import configs
 from utils.misc import pprint
 import pickle
 from utils.misc import progress_bar
-import datetime
 
 import wandb
 
@@ -53,20 +52,18 @@ class MetaTrainer(object):
         if not osp.exists(meta_base_dir):
             os.mkdir(meta_base_dir)
         save_path1 = '_'.join([args.dataset, args.model_type, 'MTL'])
-        dt = datetime.datetime.now()
-        datetime_now = dt.strftime('%Y-%m-%d_%H-%M-%S')
         save_path2 = 'shot' + str(args.shot) + '_way' + str(args.way) + '_query' + str(args.train_query) + \
             '_step' + str(args.step_size) + '_gamma' + str(args.gamma) + '_lr1' + str(args.meta_lr1) + '_lr2' + str(args.meta_lr2) + \
             '_batch' + str(args.num_batch) + '_maxepoch' + str(args.max_epoch) + \
             '_baselr' + str(args.base_lr) + '_updatestep' + str(args.update_step) + \
-            '_stepsize' + str(args.step_size) + '_' + args.meta_label + '_' + datetime_now
+            '_stepsize' + str(args.step_size) + '_' + args.meta_label
         args.save_path = meta_base_dir + '/' + save_path1 + '_' + save_path2
         ensure_path(args.save_path)
 
         # Set args to be shareable in the class
         self.args = args
-
-        wandb.init(project=args.project_name)
+        id = wandb.util.generate_id()
+        wandb.init(project=args.project_name, id=id, resume="allow")
         wandb.config.update(args)
 
         # Load meta-train set
