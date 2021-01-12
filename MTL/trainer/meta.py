@@ -62,9 +62,6 @@ class MetaTrainer(object):
 
         # Set args to be shareable in the class
         self.args = args
-        id = wandb.util.generate_id()
-        wandb.init(project=args.project_name, id=id, resume="allow")
-        wandb.config.update(args)
 
         # Load meta-train set
         self.trainset = Dataset('train', self.args, dataset=self.args.param.dataset, train_aug=False)
@@ -163,6 +160,10 @@ class MetaTrainer(object):
         trlog['val_acc'] = []
         trlog['max_acc'] = 0.0
         trlog['max_acc_epoch'] = 0
+
+        id = wandb.util.generate_id()
+        self.run_train = wandb.init(project=self.args.project_name, id=id, resume="allow", job_type='train')
+        wandb.config.update(self.args)
 
         # Set the timer
         timer = Timer()
@@ -323,6 +324,10 @@ class MetaTrainer(object):
         """The function for the meta-eval phase."""
         # Load the logs
         # trlog = torch.load(osp.join(self.args.save_path, 'trlog'))
+
+        id = wandb.util.generate_id()
+        self.run_eval = wandb.init(project=self.args.project_name, id=id, resume="allow", job_type='eval')
+        wandb.config.update(self.args)
 
         num_workers = self.args.num_workers
         if self.args.debug:
