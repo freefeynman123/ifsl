@@ -5,7 +5,7 @@ COPY requirements.txt /home/tclbot
 WORKDIR /home/tclbot
 # Install basic python stack
 RUN pip3 install --upgrade pip && \
-    pip3 install wandb && \
+    pip3 install -U wandb==0.9.5 && \
     pip3 install -r requirements.txt\
      --no-cache-dir
 

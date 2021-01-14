@@ -137,7 +137,7 @@ class MetaTrainer(object):
         Args:
           name: the name for saved checkpoint
         """  
-        torch.save(dict(params=self.model.state_dict()), osp.join(self.args.save_path, name + '.pth'))
+        torch.save(dict(params=self.model.state_dict()), osp.join(self.args.save_path, name + '.h5'))
 
     def save_artifact(self, name):
         """Saves artifact for given model name
@@ -145,10 +145,10 @@ class MetaTrainer(object):
             name: the name for saved checkpoint
         """
         artifact = wandb.Artifact(type='model', name=self.args.model_type)
-        artifact.add_file(osp.join(self.args.save_path, name + '.pth'))
+        artifact.add_file(osp.join(self.args.save_path, name + '.h5'))
         if self.args.phase=='meta_train':
             self.run_train.log_artifact(artifact)
-        elif args.phase=='meta_eval':
+        elif self.args.phase=='meta_eval':
             self.run_eval.log_artifact(artifact)
 
     def train(self):
