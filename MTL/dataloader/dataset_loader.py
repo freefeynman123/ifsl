@@ -109,5 +109,5 @@ class DatasetLoader(Dataset):
             return image, label, path
 
     def save_artifacts(self, dataset_name, folder_name, folder_dir):
-        artifact = wandb.Artifact(name=dataset_name, type='dataset')
+        artifact = wandb.Artifact(name=''.join([dataset_name, self.args.config]), type='dataset')
         artifact.add_dir(folder_dir, name=folder_name)

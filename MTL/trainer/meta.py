@@ -78,9 +78,20 @@ class MetaTrainer(object):
         
         # Build meta-transfer learning model
         self.model = MtlLearner(self.args)
-        
-        # load pretrained model without FC classifier
-        self.model.load_pretrain_weight(self.args.init_weights)
+        if wandb.run.resumed:
+            checkpoint = torch.load(wandb.restore("max_acc.pth").name)
+            self.model.load_state_dict(checkpoint['model_state_dict'])
+        else:
+            self.model = MtlLearner(self.args)
+            # load pretrained model without FC classifier
+            self.model.load_pretrain_weight(self.args.init_weights)
+        id = wandb.util.generate_id()
+        if self.args.phase == 'meta_train':
+            self.run_train = wandb.init(project=self.args.project_name, id=id, resume="allow", job_type='train')
+        else:
+            self.run_eval = wandb.init(project=self.args.project_name, id=id, resume="allow", job_type='eval')
+        wandb.config.update(self.args)
+
         '''
         self.model_dict = self.model.state_dict()
         if self.args.init_weights is not None:
@@ -144,7 +155,7 @@ class MetaTrainer(object):
         Args:
             name: the name for saved checkpoint
         """
-        artifact = wandb.Artifact(type='model', name=self.args.model_type)
+        artifact = wandb.Artifact(type='model', name=''.join([self.args.model_type, self.args.config]))
         artifact.add_file(osp.join(self.args.save_path, name + '.h5'))
         if self.args.phase=='meta_train':
             self.run_train.log_artifact(artifact)
@@ -163,10 +174,6 @@ class MetaTrainer(object):
         trlog['val_acc'] = []
         trlog['max_acc'] = 0.0
         trlog['max_acc_epoch'] = 0
-
-        id = wandb.util.generate_id()
-        self.run_train = wandb.init(project=self.args.project_name, id=id, resume="allow", job_type='train')
-        wandb.config.update(self.args)
 
         # Set the timer
         timer = Timer()
@@ -327,10 +334,6 @@ class MetaTrainer(object):
         """The function for the meta-eval phase."""
         # Load the logs
         # trlog = torch.load(osp.join(self.args.save_path, 'trlog'))
-
-        id = wandb.util.generate_id()
-        self.run_eval = wandb.init(project=self.args.project_name, id=id, resume="allow", job_type='eval')
-        wandb.config.update(self.args)
 
         num_workers = self.args.num_workers
         if self.args.debug:
