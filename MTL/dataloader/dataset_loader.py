@@ -21,6 +21,7 @@ import wandb
 class DatasetLoader(Dataset):
     """The class to load the dataset"""
     def __init__(self, setname, args, dataset="miniImagenet", train_aug=False, require_path=False):
+        self.args = args
         if dataset == "miniImagenet":
             dataset_dir = args.mini_dataset_dir
         elif dataset == "tiered":
