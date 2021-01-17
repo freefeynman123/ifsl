@@ -1,0 +1,10 @@
+method: random
+metric:
+  goal: minimize
+  name: loss
+parameters:
+  base_lr:
+    distribution: uniform
+    max: 0.05
+    min: 0.002
+program: main.py --config=mini_1_resnet_baseline --gpu=0 --num_workers=16
