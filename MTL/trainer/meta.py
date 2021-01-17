@@ -84,12 +84,13 @@ class MetaTrainer(object):
             self.model.load_pretrain_weight(self.args.init_weights)
         else:
             id = self.args.wandb_id
-            checkpoint = torch.load(wandb.restore("max_acc.pth").name)
-            self.model.load_state_dict(checkpoint['model_state_dict'])
         if self.args.phase == 'meta_train':
             self.run_train = wandb.init(project=self.args.project_name, id=id, resume="allow", job_type='train')
         else:
             self.run_eval = wandb.init(project=self.args.project_name, id=id, resume="allow", job_type='eval')
+        if self.args.wandb_id is not None:
+            checkpoint = torch.load(wandb.restore("max_acc.pth").name)
+            self.model.load_state_dict(checkpoint['model_state_dict'])
         wandb.config.update(self.args)
 
         '''
