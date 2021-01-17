@@ -85,7 +85,12 @@ class MetaTrainer(object):
             self.model = MtlLearner(self.args)
             # load pretrained model without FC classifier
             self.model.load_pretrain_weight(self.args.init_weights)
-        id = wandb.util.generate_id()
+        if self.args.wandb_id is None:
+            id = wandb.util.generate_id()
+        else:
+            id = self.args.wandb_id
+            checkpoint = torch.load(wandb.restore("max_acc.pth").name)
+            self.model.load_state_dict(checkpoint['model_state_dict'])
         if self.args.phase == 'meta_train':
             self.run_train = wandb.init(project=self.args.project_name, id=id, resume="allow", job_type='train')
         else:
@@ -248,6 +253,7 @@ class MetaTrainer(object):
             # Set averager classes to record validation losses and accuracies
             val_loss_averager = Averager()
             val_acc_averager = Averager()
+            val_losses = []
 
             # Generate the labels for test set of the episodes during meta-val for this epoch
             label = torch.arange(self.args.way).repeat(self.args.val_query)
@@ -274,8 +280,10 @@ class MetaTrainer(object):
                     # loss = F.cross_entropy(logits, label)
                     if not self.args.deconfound:
                         loss = F.cross_entropy(logits, label)
+                        loss_for_logs = F.cross_entropy(logits, label, reduction='none')
                     else:
                         loss = F.nll_loss(logits, label)
+                        loss_for_logs = F.nll_loss(logits, label, reduction='none')
 
                     acc = count_acc(logits, label)
 
