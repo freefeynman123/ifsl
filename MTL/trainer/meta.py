@@ -78,15 +78,10 @@ class MetaTrainer(object):
         
         # Build meta-transfer learning model
         self.model = MtlLearner(self.args)
-        if wandb.run.resumed:
-            checkpoint = torch.load(wandb.restore("max_acc.pth").name)
-            self.model.load_state_dict(checkpoint['model_state_dict'])
-        else:
-            self.model = MtlLearner(self.args)
-            # load pretrained model without FC classifier
-            self.model.load_pretrain_weight(self.args.init_weights)
         if self.args.wandb_id is None:
             id = wandb.util.generate_id()
+            # load pretrained model without FC classifier
+            self.model.load_pretrain_weight(self.args.init_weights)
         else:
             id = self.args.wandb_id
             checkpoint = torch.load(wandb.restore("max_acc.pth").name)
