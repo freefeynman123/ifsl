@@ -42,7 +42,7 @@ class Averager():
     def item(self):
         return self.v
 
-def count_acc(logits, label):
+def count_acc(pred, label):
     """The function to calculate the .
     Args:
       logits: input logits.
@@ -50,10 +50,25 @@ def count_acc(logits, label):
     Return:
       The output accuracy.
     """
-    pred = F.softmax(logits, dim=1).argmax(dim=1)
     if torch.cuda.is_available():
         return (pred == label).type(torch.cuda.FloatTensor).mean().item()
     return (pred == label).type(torch.FloatTensor).mean().item()
+
+def get_top_k_losses(data, losses, labels, predictions, indices, k=4):
+    """
+
+    Args:
+        data:
+        losses:
+        labels:
+        predictions:
+
+    Returns:
+
+    """
+
+    indices_sorted = np.argsort(np.array(losses))[::-1]
+    return data[indices[indices_sorted]][:k], losses[indices_sorted][:k], labels[indices_sorted][:k], predictions[indices_sorted][:k]
 
 def normalize(x):
     x_norm = torch.norm(x, p=2, dim=1).unsqueeze(1).expand_as(x)

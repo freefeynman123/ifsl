@@ -65,6 +65,7 @@ if __name__ == '__main__':
     parser.add_argument('--project_name', type=str, default="mtl_baseline")
     parser.add_argument('--num_workers', type=int, default=8)
     parser.add_argument('--wandb_id', type=str, default=None)
+    parser.add_argument("--require_index", type=bool, default=False)
     # Set and print the parameters
     args = parser.parse_args()
     # pprint(vars(args))

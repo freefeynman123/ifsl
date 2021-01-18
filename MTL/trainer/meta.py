@@ -25,7 +25,7 @@ from dataloader.dataset_loader import DatasetLoader as Dataset
 import configs
 from utils.misc import pprint
 import pickle
-from utils.misc import progress_bar
+from utils.misc import progress_bar, get_top_k_losses
 
 import wandb
 
@@ -72,7 +72,7 @@ class MetaTrainer(object):
         self.train_loader = DataLoader(dataset=self.trainset, batch_sampler=self.train_sampler, num_workers=num_workers, pin_memory=True)
 
         # Load meta-val set
-        self.valset = Dataset('val', self.args, dataset=self.args.param.dataset, train_aug=False)
+        self.valset = Dataset('val', self.args, dataset=self.args.param.dataset, train_aug=False, require_index=self.args.require_index)
         self.val_sampler = CategoriesSampler(self.valset.label, self.test_iter, self.args.way, self.args.shot + self.args.val_query)
         self.val_loader = DataLoader(dataset=self.valset, batch_sampler=self.val_sampler, num_workers=num_workers, pin_memory=True)
         
@@ -249,7 +249,9 @@ class MetaTrainer(object):
             # Set averager classes to record validation losses and accuracies
             val_loss_averager = Averager()
             val_acc_averager = Averager()
-            val_losses = []
+            # Aggregate labels, losses and predictions for logging
+
+            val_losses, val_labels, val_predictions, val_indices = [], [], [], []
 
             # Generate the labels for test set of the episodes during meta-val for this epoch
             label = torch.arange(self.args.way).repeat(self.args.val_query)
@@ -266,10 +268,17 @@ class MetaTrainer(object):
 
             if epoch > 0:
                 for i, batch in enumerate(self.val_loader, 1):
-                    if torch.cuda.is_available():
-                        data, _ = [_.cuda() for _ in batch]
+                    if len(batch) == 3:
+                        if torch.cuda.is_available():
+                            data, _, _ = [_.cuda() for _ in batch]
+                        else:
+                            data = batch[0]
+                        indices = batch[2]
                     else:
-                        data = batch[0]
+                        if torch.cuda.is_available():
+                            data, _ = [_.cuda() for _ in batch]
+                        else:
+                            data = batch[0]
                     p = self.args.shot * self.args.way
                     data_shot, data_query = data[:p], data[p:]
                     logits = self.model((data_shot, label_shot, data_query, True))
@@ -281,10 +290,15 @@ class MetaTrainer(object):
                         loss = F.nll_loss(logits, label)
                         loss_for_logs = F.nll_loss(logits, label, reduction='none')
 
-                    acc = count_acc(logits, label)
+                    predictions = F.softmax(logits, dim=1).argmax(dim=1)
+                    acc = count_acc(predictions, label)
 
                     val_loss_averager.add(loss.item())
                     val_acc_averager.add(acc)
+                    val_losses.append(loss_for_logs)
+                    val_predictions.append(predictions)
+                    val_labels.append(label)
+                    val_indices.append(indices)
 
                     if i % print_freq == 0:
                         # Update validation averagers
@@ -299,6 +313,8 @@ class MetaTrainer(object):
             # Update validation averagers
             val_loss_averager = val_loss_averager.item()
             val_acc_averager = val_acc_averager.item()
+            data_k, losses_k, labels_k, predictions_k = get_top_k_losses(self.valset.data, val_losses, val_labels, val_predictions,
+                                                                         val_indices)
             # Write the tensorboardX records
             writer.add_scalar('data/val_loss', float(val_loss_averager), epoch)
             writer.add_scalar('data/val_acc', float(val_acc_averager), epoch)

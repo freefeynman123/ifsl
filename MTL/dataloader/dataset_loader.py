@@ -20,7 +20,7 @@ import wandb
 
 class DatasetLoader(Dataset):
     """The class to load the dataset"""
-    def __init__(self, setname, args, dataset="miniImagenet", train_aug=False, require_path=False):
+    def __init__(self, setname, args, dataset="miniImagenet", train_aug=False, require_path=False, require_index=False):
         self.args = args
         if dataset == "miniImagenet":
             dataset_dir = args.mini_dataset_dir
@@ -70,6 +70,7 @@ class DatasetLoader(Dataset):
         self.label = label
         self.num_class = len(set(label))
         self.require_path = require_path
+        self.require_index = require_index
 
         # Transformation
         if dataset == "miniImagenet":
@@ -104,10 +105,12 @@ class DatasetLoader(Dataset):
     def __getitem__(self, i):
         path, label = self.data[i], self.label[i]
         image = self.transform(Image.open(path).convert('RGB'))
-        if not self.require_path:
-            return image, label
-        else:
+        if self.require_path:
             return image, label, path
+        elif self. require_index:
+            return image, label, i
+        else:
+            return image, label
 
     def save_artifacts(self, dataset_name, folder_name, folder_dir):
         artifact = wandb.Artifact(name=''.join([dataset_name, self.args.config]), type='dataset')
