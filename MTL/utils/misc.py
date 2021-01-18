@@ -66,8 +66,8 @@ def get_top_k_losses(data, losses, labels, predictions, indices, k=4):
     Returns:
 
     """
-
-    indices_sorted = np.argsort(np.array(losses))[::-1]
+    losses_tensor = torch.Tensor(losses)
+    indices_sorted = torch.argsort(losses_tensor)[::-1]
     return data[indices[indices_sorted]][:k], losses[indices_sorted][:k], labels[indices_sorted][:k], predictions[indices_sorted][:k]
 
 def normalize(x):
