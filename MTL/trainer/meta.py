@@ -223,7 +223,8 @@ class MetaTrainer(object):
                 # Calculate meta-train loss
                 loss = self.criterion(logits, label)
                 # Calculate meta-train accuracy
-                acc = count_acc(logits, label)
+                predictions = F.softmax(logits, dim=1).argmax(dim=1)
+                acc = count_acc(predictions, label)
                 # Write the tensorboardX records
                 writer.add_scalar('data/loss', float(loss), global_count)
                 writer.add_scalar('data/acc', float(acc), global_count)
@@ -417,7 +418,8 @@ class MetaTrainer(object):
             k = self.args.way * self.args.shot
             data_shot, data_query = data[:k], data[k:]
             logits = self.model((data_shot, label_shot, data_query, True))
-            acc = count_acc(logits, label)
+            predictions = F.softmax(logits, dim=1).argmax(dim=1)
+            acc = count_acc(predictions, label)
             hardness, correct = get_hardness_correct(logits, label_shot, label, data_shot, data_query, self.model.pretrain)
             ave_acc.add(acc)
             hacc.add_data(hardness, correct)
