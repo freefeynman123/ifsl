@@ -39,7 +39,7 @@ class DatasetLoader(Dataset):
                 train_folder = "train"
                 THE_PATH = osp.join(dataset_dir, train_folder)
                 label_list = os.listdir(THE_PATH)
-                if self.args.save_artifacts_datasetsave_artifacts:
+                if self.args.save_artifacts_dataset:
                     self.save_artifacts(dataset_name=dataset, folder_name=setname, folder_dir=THE_PATH)
             elif setname=='test':
                 THE_PATH = osp.join(dataset_dir, 'test')
