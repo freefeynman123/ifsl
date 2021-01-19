@@ -18,7 +18,8 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from dataloader.samplers import CategoriesSampler
 from models.mtl import MtlLearner
-from utils.misc import Averager, Timer, count_acc, compute_confidence_interval, ensure_path, count_dacc, get_hardness_correct
+from utils.misc import Averager, Timer, count_acc, compute_confidence_interval, ensure_path, count_dacc, \
+    get_hardness_correct
 from utils.hacc import Hacc
 from tensorboardX import SummaryWriter
 from dataloader.dataset_loader import DatasetLoader as Dataset
@@ -32,6 +33,7 @@ import wandb
 
 class MetaTrainer(object):
     """The class that contains the code for the meta-train phase and meta-eval phase."""
+
     def __init__(self, args):
         param = configs.__dict__[args.config]()
         args.shot = param.shot
@@ -53,10 +55,11 @@ class MetaTrainer(object):
             os.mkdir(meta_base_dir)
         save_path1 = '_'.join([args.dataset, args.model_type, 'MTL'])
         save_path2 = 'shot' + str(args.shot) + '_way' + str(args.way) + '_query' + str(args.train_query) + \
-            '_step' + str(args.step_size) + '_gamma' + str(args.gamma) + '_lr1' + str(args.meta_lr1) + '_lr2' + str(args.meta_lr2) + \
-            '_batch' + str(args.num_batch) + '_maxepoch' + str(args.max_epoch) + \
-            '_baselr' + str(args.base_lr) + '_updatestep' + str(args.update_step) + \
-            '_stepsize' + str(args.step_size) + '_' + args.meta_label
+                     '_step' + str(args.step_size) + '_gamma' + str(args.gamma) + '_lr1' + str(
+            args.meta_lr1) + '_lr2' + str(args.meta_lr2) + \
+                     '_batch' + str(args.num_batch) + '_maxepoch' + str(args.max_epoch) + \
+                     '_baselr' + str(args.base_lr) + '_updatestep' + str(args.update_step) + \
+                     '_stepsize' + str(args.step_size) + '_' + args.meta_label
         args.save_path = meta_base_dir + '/' + save_path1 + '_' + save_path2
         ensure_path(args.save_path)
 
@@ -68,14 +71,19 @@ class MetaTrainer(object):
         num_workers = self.args.num_workers
         if args.debug:
             num_workers = 0
-        self.train_sampler = CategoriesSampler(self.trainset.label, self.args.num_batch, self.args.way, self.args.shot + self.args.train_query)
-        self.train_loader = DataLoader(dataset=self.trainset, batch_sampler=self.train_sampler, num_workers=num_workers, pin_memory=True)
+        self.train_sampler = CategoriesSampler(self.trainset.label, self.args.num_batch, self.args.way,
+                                               self.args.shot + self.args.train_query)
+        self.train_loader = DataLoader(dataset=self.trainset, batch_sampler=self.train_sampler, num_workers=num_workers,
+                                       pin_memory=True)
 
         # Load meta-val set
-        self.valset = Dataset('val', self.args, dataset=self.args.param.dataset, train_aug=False, require_index=self.args.require_index)
-        self.val_sampler = CategoriesSampler(self.valset.label, self.test_iter, self.args.way, self.args.shot + self.args.val_query)
-        self.val_loader = DataLoader(dataset=self.valset, batch_sampler=self.val_sampler, num_workers=num_workers, pin_memory=True)
-        
+        self.valset = Dataset('val', self.args, dataset=self.args.param.dataset, train_aug=False,
+                              require_index=self.args.require_index)
+        self.val_sampler = CategoriesSampler(self.valset.label, self.test_iter, self.args.way,
+                                             self.args.shot + self.args.val_query)
+        self.val_loader = DataLoader(dataset=self.valset, batch_sampler=self.val_sampler, num_workers=num_workers,
+                                     pin_memory=True)
+
         # Build meta-transfer learning model
         self.model = MtlLearner(self.args)
         if self.args.wandb_id is None:
@@ -120,10 +128,12 @@ class MetaTrainer(object):
                 self.model.encoder = torch.nn.DataParallel(self.model.encoder).cuda()
 
         # Set optimizer
-        self.optimizer = torch.optim.Adam([{'params': filter(lambda p: p.requires_grad, self.model.encoder.parameters())},
-            {'params': self.model.base_learner.parameters(), 'lr': self.args.meta_lr2}], lr=self.args.meta_lr1)
+        self.optimizer = torch.optim.Adam(
+            [{'params': filter(lambda p: p.requires_grad, self.model.encoder.parameters())},
+             {'params': self.model.base_learner.parameters(), 'lr': self.args.meta_lr2}], lr=self.args.meta_lr1)
         # Set learning rate scheduler
-        self.lr_scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=self.args.step_size, gamma=self.args.gamma)
+        self.lr_scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=self.args.step_size,
+                                                            gamma=self.args.gamma)
 
         if not self.args.deconfound:
             self.criterion = torch.nn.CrossEntropyLoss().cuda()
@@ -133,7 +143,7 @@ class MetaTrainer(object):
         # Enable evaluation with Cross
         if args.cross:
             args.param.dataset = "cross"
-    
+
     def write_output_message(self, message, file_name=None):
         if file_name is None:
             file_name = "results"
@@ -143,12 +153,12 @@ class MetaTrainer(object):
             os.makedirs(os.path.dirname(output_file), exist_ok=True)
         with open(output_file, "a") as f:
             f.write(message + "\n")
-        
+
     def save_model(self, name):
         """The function to save checkpoints.
         Args:
           name: the name for saved checkpoint
-        """  
+        """
         torch.save(dict(params=self.model.state_dict()), osp.join(self.args.save_path, name + '.h5'))
 
     def save_artifact(self, name):
@@ -158,9 +168,9 @@ class MetaTrainer(object):
         """
         artifact = wandb.Artifact(type='model', name=''.join([self.args.model_type, self.args.config]))
         artifact.add_file(osp.join(self.args.save_path, name + '.h5'))
-        if self.args.phase=='meta_train':
+        if self.args.phase == 'meta_train':
             self.run_train.log_artifact(artifact)
-        elif self.args.phase=='meta_eval':
+        elif self.args.phase == 'meta_eval':
             self.run_eval.log_artifact(artifact)
 
     def train(self):
@@ -189,7 +199,7 @@ class MetaTrainer(object):
             label_shot = label_shot.type(torch.cuda.LongTensor)
         else:
             label_shot = label_shot.type(torch.LongTensor)
-            
+
         # Start meta-train
         for epoch in range(1, self.args.max_epoch + 1):
             # Update learning rate
@@ -206,7 +216,7 @@ class MetaTrainer(object):
                 label = label.type(torch.cuda.LongTensor)
             else:
                 label = label.type(torch.LongTensor)
-            
+
             # Using tqdm to read samples from train loader
             tqdm_gen = tqdm.tqdm(self.train_loader)
             for i, batch in enumerate(tqdm_gen, 1):
@@ -260,7 +270,7 @@ class MetaTrainer(object):
                 label = label.type(torch.cuda.LongTensor)
             else:
                 label = label.type(torch.LongTensor)
-            
+
             # Print previous information
             if epoch % 10 == 0:
                 print('Best Epoch {}, Best Val Acc={:.4f}'.format(trlog['max_acc_epoch'], trlog['max_acc']))
@@ -309,15 +319,18 @@ class MetaTrainer(object):
                         writer.add_scalar('data/val_loss', float(val_loss_averager_item), epoch)
                         writer.add_scalar('data/val_acc', float(val_acc_averager_item), epoch)
                         # Print loss and accuracy for this epoch
-                        print('Epoch {}, Val, Loss={:.4f} Acc={:.4f}'.format(epoch, val_loss_averager_item, val_acc_averager_item))
+                        print('Epoch {}, Val, Loss={:.4f} Acc={:.4f}'.format(epoch, val_loss_averager_item,
+                                                                             val_acc_averager_item))
 
             # Update validation averagers
             val_loss_averager = val_loss_averager.item()
             val_acc_averager = val_acc_averager.item()
-            data_k, losses_k, labels_k, predictions_k = get_top_k_losses(self.valset.data, val_losses, val_labels, val_predictions,
+            data_k, losses_k, labels_k, predictions_k = get_top_k_losses(self.valset.data, val_losses, val_labels,
+                                                                         val_predictions,
                                                                          val_indices)
-            for data, loss, label, prediction in zip(data_k, losses_k, labels_k, predictions_k):
-                wandb.log({"examples": wandb.Image(data, caption={f"Image with label {label}, prediction: {prediction}"})})
+            images_to_log = [wandb.Image(data, caption={f"Image with label {label}, prediction: {prediction}"}) for
+                             data, loss, label, prediction in zip(data_k, losses_k, labels_k, predictions_k)]
+            wandb.log({"examples": images_to_log})
             # Write the tensorboardX records
             writer.add_scalar('data/val_loss', float(val_loss_averager), epoch)
             writer.add_scalar('data/val_acc', float(val_acc_averager), epoch)
@@ -325,7 +338,7 @@ class MetaTrainer(object):
             msg = 'Epoch {}, Val, Loss={:.4f} Acc={:.4f}'.format(epoch, val_loss_averager, val_acc_averager)
             print(msg)
             self.write_output_message(msg)
-            
+
             # Update best saved model
             if val_acc_averager > trlog['max_acc']:
                 trlog['max_acc'] = val_acc_averager
@@ -334,8 +347,8 @@ class MetaTrainer(object):
                 self.save_artifact('max_acc')
             # Save model every 10 epochs
             if epoch % 10 == 0:
-                self.save_model('epoch'+str(epoch))
-                self.save_artifact('epoch'+str(epoch))
+                self.save_model('epoch' + str(epoch))
+                self.save_artifact('epoch' + str(epoch))
 
             # Update the logs
             trlog['train_loss'].append(train_loss_averager)
@@ -343,14 +356,16 @@ class MetaTrainer(object):
             trlog['val_loss'].append(val_loss_averager)
             trlog['val_acc'].append(val_acc_averager)
 
-            wandb.log({'train_loss': train_loss_averager, 'train_acc': train_acc_averager, 'val_loss': val_loss_averager,
-                       'val_acc': val_acc_averager})
+            wandb.log(
+                {'train_loss': train_loss_averager, 'train_acc': train_acc_averager, 'val_loss': val_loss_averager,
+                 'val_acc':    val_acc_averager})
 
             # Save log
             torch.save(trlog, osp.join(self.args.save_path, 'trlog'))
 
             if epoch % 10 == 0:
-                print('Running Time: {}, Estimated Time: {}'.format(timer.measure(), timer.measure(epoch / self.args.max_epoch)))
+                print('Running Time: {}, Estimated Time: {}'.format(timer.measure(),
+                                                                    timer.measure(epoch / self.args.max_epoch)))
         writer.close()
 
     def eval(self):
@@ -409,7 +424,7 @@ class MetaTrainer(object):
             label_shot = label_shot.type(torch.cuda.LongTensor)
         else:
             label_shot = label_shot.type(torch.LongTensor)
-        
+
         hacc = Hacc()
         # Start meta-test
         for i, batch in enumerate(loader, 1):
@@ -422,21 +437,23 @@ class MetaTrainer(object):
             logits = self.model((data_shot, label_shot, data_query, True))
             predictions = F.softmax(logits, dim=1).argmax(dim=1)
             acc = count_acc(predictions, label)
-            hardness, correct = get_hardness_correct(logits, label_shot, label, data_shot, data_query, self.model.pretrain)
+            hardness, correct = get_hardness_correct(logits, label_shot, label, data_shot, data_query,
+                                                     self.model.pretrain)
             ave_acc.add(acc)
             hacc.add_data(hardness, correct)
             test_acc_record[i - 1] = acc
             if i % 100 == 0:
-                #print('batch {}: {:.2f}({:.2f})'.format(i, ave_acc.item() * 100, acc * 100))
+                # print('batch {}: {:.2f}({:.2f})'.format(i, ave_acc.item() * 100, acc * 100))
                 print("Average acc:{:.4f}, Average hAcc:{:.4f}".format(ave_acc.item(), hacc.get_topk_hard_acc()))
-            
+
         # Modify add path to generate test case name:
         test_case_name = self.add_path
         if self.args.cross:
             test_case_name += "_cross"
         # Calculate the confidence interval, update the logs
         m, pm = compute_confidence_interval(test_acc_record)
-        msg = test_case_name + ' Test Acc {:.4f} +- {:.4f}, hAcc {:.4f}'.format(ave_acc.item() * 100, pm * 100, hacc.get_topk_hard_acc())
+        msg = test_case_name + ' Test Acc {:.4f} +- {:.4f}, hAcc {:.4f}'.format(ave_acc.item() * 100, pm * 100,
+                                                                                hacc.get_topk_hard_acc())
         print(msg)
         self.write_output_message(msg, test_case_name)
 
