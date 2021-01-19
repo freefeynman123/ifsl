@@ -110,7 +110,7 @@ class DatasetLoader(Dataset):
         image = self.transform(Image.open(path).convert('RGB'))
         if self.require_path:
             return image, label, path
-        elif self. require_index:
+        elif self.require_index:
             return image, label, i
         else:
             return image, label

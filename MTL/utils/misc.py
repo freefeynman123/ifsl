@@ -14,6 +14,7 @@ import time
 import pprint
 import torch
 import numpy as np
+from PIL import Image
 import torch.nn as nn
 import torch.nn.functional as F
 import sys
@@ -71,11 +72,16 @@ def get_top_k_losses(data, losses, labels, predictions, indices, k=4):
         torch.manual_seed(idx)
         batch_idx = torch.randint(low=0, high=len(data), size=(1,)).item()
         index = indices[batch_idx]
-        data_list.append(data[index])
-        losses_list.append(losses[index])
-        labels_list.append(labels[index])
-        predictions_list.append(predictions[index])
-    return torch.Tensor(data_list), torch.Tensor(losses_list), torch.Tensor(labels_list), torch.Tensor(predictions_list)
+        data_list.extend(np.array(data)[index])
+        losses_list.extend(losses[batch_idx])
+        labels_list.extend(labels[batch_idx])
+        predictions_list.extend(predictions[batch_idx])
+    index_to_sort = np.argsort(np.array(losses_list))[::-1][:k]
+    data_sorted = np.array([Image.open(data_path).convert('RGB') for data_path in np.array(data_list[index_to_sort])])
+    losses_sorted = np.array(losses_list)[index_to_sort]
+    labels_sorted = np.array(labels_list)[index_to_sort]
+    predictions_sorted = np.array(predictions_list)[index_to_sort]
+    return data_sorted, losses_sorted, labels_sorted, predictions_sorted
 
 def normalize(x):
     x_norm = torch.norm(x, p=2, dim=1).unsqueeze(1).expand_as(x)

@@ -299,7 +299,7 @@ class MetaTrainer(object):
                     val_losses.append(loss_for_logs)
                     val_predictions.append(predictions)
                     val_labels.append(label)
-                    val_indices.append(indices)
+                    val_indices.append(indices[p:])
 
                     if i % print_freq == 0:
                         # Update validation averagers
