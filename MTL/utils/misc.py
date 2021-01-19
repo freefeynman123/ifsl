@@ -69,7 +69,7 @@ def get_top_k_losses(data, losses, labels, predictions, indices, k=4):
     data_list, losses_list, labels_list, predictions_list = [], [], [], []
     for idx in range(k):
         torch.manual_seed(idx)
-        batch_idx = torch.randint(low=0, high=len(data))
+        batch_idx = torch.randint(low=0, high=len(data), size=1)
         index = indices[batch_idx]
         data_list.append(data[index])
         losses_list.append(losses[index])
