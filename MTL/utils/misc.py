@@ -66,9 +66,16 @@ def get_top_k_losses(data, losses, labels, predictions, indices, k=4):
     Returns:
 
     """
-    losses_tensor = torch.Tensor(losses)
-    indices_sorted = torch.argsort(losses_tensor)[::-1]
-    return data[indices[indices_sorted]][:k], losses[indices_sorted][:k], labels[indices_sorted][:k], predictions[indices_sorted][:k]
+    data_list, losses_list, labels_list, predictions_list = [], [], [], []
+    for idx in range(k):
+        torch.manual_seed(idx)
+        batch_idx = torch.randint(low=0, high=len(data))
+        index = indices[batch_idx]
+        data_list.append(data[index])
+        losses_list.append(losses[index])
+        labels_list.append(labels[index])
+        predictions_list.append(predictions[index])
+    return torch.Tensor(data_list), torch.Tensor(losses_list), torch.Tensor(labels_list), torch.Tensor(predictions_list)
 
 def normalize(x):
     x_norm = torch.norm(x, p=2, dim=1).unsqueeze(1).expand_as(x)
