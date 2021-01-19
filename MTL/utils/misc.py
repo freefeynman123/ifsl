@@ -73,11 +73,11 @@ def get_top_k_losses(data, losses, labels, predictions, indices, k=4):
         batch_idx = torch.randint(low=0, high=len(indices), size=(1,)).item()
         index = indices[batch_idx]
         data_list.extend(np.array(data)[index])
-        losses_list.extend(losses[batch_idx])
-        labels_list.extend(labels[batch_idx])
-        predictions_list.extend(predictions[batch_idx])
+        losses_list.extend(losses[batch_idx].cpu().detach().numpy())
+        labels_list.extend(labels[batch_idx].cpu().detach().numpy())
+        predictions_list.extend(predictions[batch_idx].cpu().detach().numpy())
     index_to_sort = np.argsort(np.array(losses_list))[::-1][:k]
-    data_sorted = np.array([Image.open(data_path).convert('RGB') for data_path in np.array(data_list[index_to_sort])])
+    data_sorted = np.array([np.array(Image.open(data_path).convert('RGB')) for data_path in np.array(data_list)[index_to_sort]])
     losses_sorted = np.array(losses_list)[index_to_sort]
     labels_sorted = np.array(labels_list)[index_to_sort]
     predictions_sorted = np.array(predictions_list)[index_to_sort]
