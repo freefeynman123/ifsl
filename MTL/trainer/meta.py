@@ -316,6 +316,8 @@ class MetaTrainer(object):
             val_acc_averager = val_acc_averager.item()
             data_k, losses_k, labels_k, predictions_k = get_top_k_losses(self.valset.data, val_losses, val_labels, val_predictions,
                                                                          val_indices)
+            for data, loss, label, prediction in zip(data_k, losses_k, labels_k, predictions_k):
+                wandb.log({"examples": wandb.Image(data, caption={f"Image with label {label}, prediction: {prediction}"})})
             # Write the tensorboardX records
             writer.add_scalar('data/val_loss', float(val_loss_averager), epoch)
             writer.add_scalar('data/val_acc', float(val_acc_averager), epoch)
