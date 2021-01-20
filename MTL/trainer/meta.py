@@ -328,7 +328,7 @@ class MetaTrainer(object):
             data_k, losses_k, labels_k, predictions_k = get_top_k_losses(self.valset.data, val_losses, val_labels,
                                                                          val_predictions,
                                                                          val_indices)
-            images_to_log = [wandb.Image(data, caption={f"Image with label {label}, prediction: {prediction}"}) for
+            images_to_log = [wandb.Image(data, caption=f"Image with label {label}, prediction: {prediction}") for
                              data, loss, label, prediction in zip(data_k, losses_k, labels_k, predictions_k)]
             wandb.log({"examples": images_to_log})
             # Write the tensorboardX records
