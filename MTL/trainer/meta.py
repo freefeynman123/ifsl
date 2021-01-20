@@ -262,7 +262,7 @@ class MetaTrainer(object):
             val_acc_averager = Averager()
             # Aggregate labels, losses and predictions for logging
 
-            val_losses, val_labels, val_predictions, val_indices = [], [], [], []
+            val_losses, val_labels, val_predictions, val_indices, val_label_names = [], [], [], [], []
 
             # Generate the labels for test set of the episodes during meta-val for this epoch
             label = torch.arange(self.args.way).repeat(self.args.val_query)
@@ -279,12 +279,13 @@ class MetaTrainer(object):
 
             if epoch > 0:
                 for i, batch in enumerate(self.val_loader, 1):
-                    if len(batch) == 3:
+                    if len(batch) == 4:
                         if torch.cuda.is_available():
-                            data, _, _ = [_.cuda() for _ in batch]
+                            data, _, _, _ = [_.cuda() for _ in batch]
                         else:
                             data = batch[0]
                         indices = batch[2]
+                        label_names = batch[3]
                     else:
                         if torch.cuda.is_available():
                             data, _ = [_.cuda() for _ in batch]
@@ -310,6 +311,7 @@ class MetaTrainer(object):
                     val_predictions.append(predictions)
                     val_labels.append(label)
                     val_indices.append(indices[p:])
+                    val_label_names.append(label_names[p:])
 
                     if i % print_freq == 0:
                         # Update validation averagers
@@ -325,11 +327,12 @@ class MetaTrainer(object):
             # Update validation averagers
             val_loss_averager = val_loss_averager.item()
             val_acc_averager = val_acc_averager.item()
-            data_k, losses_k, labels_k, predictions_k = get_top_k_losses(self.valset.data, val_losses, val_labels,
+            data_k, losses_k, labels_k, predictions_k, label_names_k = get_top_k_losses(self.valset.data, val_losses, val_labels,
                                                                          val_predictions,
-                                                                         val_indices)
-            images_to_log = [wandb.Image(data, caption=f"Image with label {label}, prediction: {prediction}") for
-                             data, loss, label, prediction in zip(data_k, losses_k, labels_k, predictions_k)]
+                                                                         val_indices,
+                                                                         val_label_names)
+            images_to_log = [wandb.Image(data, caption=f"Image with label {label}, name: {label_name} prediction: {prediction}") for
+                             data, loss, label, prediction, label_name in zip(data_k, losses_k, labels_k, predictions_k, label_names_k)]
             wandb.log({"examples": images_to_log})
             # Write the tensorboardX records
             writer.add_scalar('data/val_loss', float(val_loss_averager), epoch)

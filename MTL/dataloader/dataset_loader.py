@@ -11,6 +11,7 @@
 """ Dataloader for all datasets. """
 import os.path as osp
 import os
+import json
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms
@@ -39,16 +40,22 @@ class DatasetLoader(Dataset):
                 train_folder = "train"
                 THE_PATH = osp.join(dataset_dir, train_folder)
                 label_list = os.listdir(THE_PATH)
+                with open("class_names/train.json") as file:
+                    labels_dict = json.load(file)
                 if self.args.save_artifacts_dataset:
                     self.save_artifacts(dataset_name=dataset, folder_name=setname, folder_dir=THE_PATH)
             elif setname=='test':
                 THE_PATH = osp.join(dataset_dir, 'test')
                 label_list = os.listdir(THE_PATH)
+                with open("class_names/test.json") as file:
+                    labels_dict = json.load(file)
                 if self.args.save_artifacts_dataset:
                     self.save_artifacts(dataset_name=dataset, folder_name=setname, folder_dir=THE_PATH)
             elif setname=='val':
                 THE_PATH = osp.join(dataset_dir, 'val')
                 label_list = os.listdir(THE_PATH)
+                with open("class_names/val.json") as file:
+                    labels_dict = json.load(file)
                 if self.args.save_artifacts_dataset:
                     self.save_artifacts(dataset_name=dataset, folder_name=setname, folder_dir=THE_PATH)
             else:
@@ -57,6 +64,7 @@ class DatasetLoader(Dataset):
         # Generate empty list for data and label           
         data = []
         label = []
+        label_name = []
 
         # Get folders' name
         folders = [osp.join(THE_PATH, the_label) for the_label in label_list if os.path.isdir(osp.join(THE_PATH, the_label))]
@@ -67,10 +75,12 @@ class DatasetLoader(Dataset):
             for image_path in this_folder_images:
                 data.append(osp.join(this_folder, image_path))
                 label.append(idx)
+                label_name.append(labels_dict[this_folder])
 
         # Set data, label and class number to be accessable from outside
         self.data = data
         self.label = label
+        self.label_name = label_name
         self.num_class = len(set(label))
         self.require_path = require_path
         self.require_index = require_index
@@ -106,12 +116,12 @@ class DatasetLoader(Dataset):
         return len(self.data)
 
     def __getitem__(self, i):
-        path, label = self.data[i], self.label[i]
+        path, label, label_name = self.data[i], self.label[i], self.label_name[i]
         image = self.transform(Image.open(path).convert('RGB'))
         if self.require_path:
             return image, label, path
         elif self.require_index:
-            return image, label, i
+            return image, label, i, label_name
         else:
             return image, label
 
