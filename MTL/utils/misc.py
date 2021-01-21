@@ -30,8 +30,10 @@ def ensure_path(path):
     else:
         os.makedirs(path)
 
+
 class Averager():
     """The class to calculate the average."""
+
     def __init__(self):
         self.n = 0
         self.v = 0
@@ -42,6 +44,7 @@ class Averager():
 
     def item(self):
         return self.v
+
 
 def count_acc(pred, label):
     """The function to calculate the .
@@ -55,6 +58,7 @@ def count_acc(pred, label):
         return (pred == label).type(torch.cuda.FloatTensor).mean().item()
     return (pred == label).type(torch.FloatTensor).mean().item()
 
+
 def get_top_k_losses(data, losses, labels, predictions, indices, label_names, k=4):
     """
 
@@ -67,28 +71,38 @@ def get_top_k_losses(data, losses, labels, predictions, indices, label_names, k=
     Returns:
 
     """
-    data_list, losses_list, labels_list, predictions_list, label_names_list = [], [], [], [], []
+    data_list, losses_list, labels_list, predictions_list, label_names_list, label_names_dict_list = [], [], [], [], [], []
     for idx in range(k):
         torch.manual_seed(idx)
         batch_idx = torch.randint(low=0, high=len(indices), size=(1,)).item()
         index = indices[batch_idx]
+        # Prepare dict to map labels from given batch to its names - used to determine labels for prediction
+        label_names_dict = {}
+        for label, name in zip(labels[batch_idx], label_names):
+            label_names_dict[label] = name
         data_list.extend(np.array(data)[index])
         losses_list.extend(losses[batch_idx].cpu().detach().numpy())
         labels_list.extend(labels[batch_idx].cpu().detach().numpy())
         label_names_list.extend(label_names[batch_idx])
         predictions_list.extend(predictions[batch_idx].cpu().detach().numpy())
+        label_names_dict_list.extend(label_names_dict)
     index_to_sort = np.argsort(np.array(losses_list))[::-1][:k]
-    data_sorted = np.array([np.array(Image.open(data_path).convert('RGB')) for data_path in np.array(data_list)[index_to_sort]])
+    data_sorted = np.array(
+        [np.array(Image.open(data_path).convert('RGB')) for data_path in np.array(data_list)[index_to_sort]])
     losses_sorted = np.array(losses_list)[index_to_sort]
     labels_sorted = np.array(labels_list)[index_to_sort]
     predictions_sorted = np.array(predictions_list)[index_to_sort]
+    predictions_names_sorted = np.array(
+        [label_names_dict[idx] for idx, label_names_dict in zip(predictions_sorted, label_names_dict_list)])
     label_names_sorted = np.array(label_names_list)[index_to_sort]
-    return data_sorted, losses_sorted, labels_sorted, predictions_sorted, label_names_sorted
+    return data_sorted, losses_sorted, labels_sorted, predictions_sorted, label_names_sorted, predictions_names_sorted
+
 
 def normalize(x):
     x_norm = torch.norm(x, p=2, dim=1).unsqueeze(1).expand_as(x)
     x_normalized = x.div(x_norm + 0.00001)
     return x_normalized
+
 
 def count_dacc(pred_logits, support_labels, query_labels, support_imgs, query_imgs, pretrain):
     relu = torch.nn.ReLU()
@@ -120,6 +134,7 @@ def count_dacc(pred_logits, support_labels, query_labels, support_imgs, query_im
     pred = F.softmax(pred_logits, dim=1).argmax(dim=1)
     return ((pred == query_labels).detach().cpu().numpy() * hardness).sum() / hardness.sum()
 
+
 def get_hardness_correct(pred_logits, support_labels, query_labels, support_imgs, query_imgs, pretrain):
     relu = torch.nn.ReLU()
     softmax = torch.nn.Softmax(dim=1)
@@ -148,8 +163,10 @@ def get_hardness_correct(pred_logits, support_labels, query_labels, support_imgs
     pred = F.softmax(pred_logits, dim=1).argmax(dim=1)
     return hardness, (pred == query_labels).detach().cpu().numpy()
 
+
 class Timer():
     """The class for timer."""
+
     def __init__(self):
         self.o = time.time()
 
@@ -162,22 +179,24 @@ class Timer():
             return '{}m'.format(round(x / 60))
         return '{}s'.format(x)
 
+
 _utils_pp = pprint.PrettyPrinter()
+
 
 def pprint(x):
     _utils_pp.pprint(x)
 
 
 def format_time(seconds):
-    days = int(seconds / 3600/24)
-    seconds = seconds - days*3600*24
+    days = int(seconds / 3600 / 24)
+    seconds = seconds - days * 3600 * 24
     hours = int(seconds / 3600)
-    seconds = seconds - hours*3600
+    seconds = seconds - hours * 3600
     minutes = int(seconds / 60)
-    seconds = seconds - minutes*60
+    seconds = seconds - minutes * 60
     secondsf = int(seconds)
     seconds = seconds - secondsf
-    millis = int(seconds*1000)
+    millis = int(seconds * 1000)
 
     f = ''
     i = 1
@@ -230,7 +249,7 @@ def progress_bar(current, total, msg=None):
     if current == 0:
         begin_time = time.time()  # Reset for new bar.
 
-    cur_len = int(TOTAL_BAR_LENGTH * current/total)
+    cur_len = int(TOTAL_BAR_LENGTH * current / total)
     rest_len = int(TOTAL_BAR_LENGTH - cur_len) - 1
 
     sys.stdout.write(' [')
@@ -254,15 +273,15 @@ def progress_bar(current, total, msg=None):
 
     msg = ''.join(L)
     sys.stdout.write(msg)
-    for i in range(term_width-int(TOTAL_BAR_LENGTH)-len(msg)-3):
+    for i in range(term_width - int(TOTAL_BAR_LENGTH) - len(msg) - 3):
         sys.stdout.write(' ')
 
     # Go back to the center of the bar.
-    for i in range(term_width-int(TOTAL_BAR_LENGTH/2)+2):
+    for i in range(term_width - int(TOTAL_BAR_LENGTH / 2) + 2):
         sys.stdout.write('\b')
-    sys.stdout.write(' %d/%d ' % (current+1, total))
+    sys.stdout.write(' %d/%d ' % (current + 1, total))
 
-    if current < total-1:
+    if current < total - 1:
         sys.stdout.write('\r')
     else:
         sys.stdout.write('\n')

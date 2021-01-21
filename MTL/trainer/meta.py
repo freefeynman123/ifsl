@@ -327,12 +327,15 @@ class MetaTrainer(object):
             # Update validation averagers
             val_loss_averager = val_loss_averager.item()
             val_acc_averager = val_acc_averager.item()
-            data_k, losses_k, labels_k, predictions_k, label_names_k = get_top_k_losses(self.valset.data, val_losses, val_labels,
-                                                                         val_predictions,
-                                                                         val_indices,
-                                                                         val_label_names)
-            images_to_log = [wandb.Image(data, caption=f"Image with label {label}, name: {label_name} prediction: {prediction}") for
-                             data, loss, label, prediction, label_name in zip(data_k, losses_k, labels_k, predictions_k, label_names_k)]
+            data_k, losses_k, labels_k, predictions_k, label_names_k, prediction_names_k = get_top_k_losses(
+                self.valset.data, val_losses, val_labels,
+                val_predictions,
+                val_indices,
+                val_label_names)
+            images_to_log = [
+                wandb.Image(data, caption=f"Image with label name: {label_name} prediction name: {prediction_name}") for
+                data, loss, label_name, prediction_name in
+                zip(data_k, losses_k, label_names_k, prediction_names_k)]
             wandb.log({"examples": images_to_log})
             # Write the tensorboardX records
             writer.add_scalar('data/val_loss', float(val_loss_averager), epoch)
