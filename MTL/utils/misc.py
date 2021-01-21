@@ -78,14 +78,15 @@ def get_top_k_losses(data, losses, labels, predictions, indices, label_names, k=
         index = indices[batch_idx]
         # Prepare dict to map labels from given batch to its names - used to determine labels for prediction
         label_names_dict = {}
-        for label, name in zip(labels[batch_idx], label_names):
-            label_names_dict[label] = name
+        for label, name in zip(labels[batch_idx].cpu().detach().numpy(), label_names[batch_idx]):
+            if label not in label_names_dict:
+                label_names_dict[label] = name
         data_list.extend(np.array(data)[index])
         losses_list.extend(losses[batch_idx].cpu().detach().numpy())
         labels_list.extend(labels[batch_idx].cpu().detach().numpy())
         label_names_list.extend(label_names[batch_idx])
         predictions_list.extend(predictions[batch_idx].cpu().detach().numpy())
-        label_names_dict_list.extend(label_names_dict)
+        label_names_dict_list.append(label_names_dict)
     index_to_sort = np.argsort(np.array(losses_list))[::-1][:k]
     data_sorted = np.array(
         [np.array(Image.open(data_path).convert('RGB')) for data_path in np.array(data_list)[index_to_sort]])
