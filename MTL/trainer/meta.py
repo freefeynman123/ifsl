@@ -223,7 +223,7 @@ class MetaTrainer(object):
                 # Update global count number 
                 global_count = global_count + 1
                 if torch.cuda.is_available():
-                    data, _ = [_.cuda() for _ in batch]
+                    data = batch[0].cuda()
                 else:
                     data = batch[0]
                 p = self.args.shot * self.args.way
@@ -281,14 +281,14 @@ class MetaTrainer(object):
                 for i, batch in enumerate(self.val_loader, 1):
                     if len(batch) == 4:
                         if torch.cuda.is_available():
-                            data, _, _, _ = [_.cuda() for _ in batch]
+                            data = batch[0].cuda()
                         else:
                             data = batch[0]
                         indices = batch[2]
                         label_names = batch[3]
                     else:
                         if torch.cuda.is_available():
-                            data, _ = [_.cuda() for _ in batch]
+                            data = batch[0].cuda()
                         else:
                             data = batch[0]
                     p = self.args.shot * self.args.way
@@ -335,6 +335,7 @@ class MetaTrainer(object):
                              data, loss, label, prediction, label_name in zip(data_k, losses_k, labels_k, predictions_k, label_names_k)]
             wandb.log({"examples": images_to_log})
             # Write the tensorboardX records
+            writer.add_scalar('data/val_loss', float(val_loss_averager), epoch)
             writer.add_scalar('data/val_loss', float(val_loss_averager), epoch)
             writer.add_scalar('data/val_acc', float(val_acc_averager), epoch)
             # Print loss and accuracy for this epoch
@@ -432,10 +433,11 @@ class MetaTrainer(object):
         # Start meta-test
         for i, batch in enumerate(loader, 1):
             if torch.cuda.is_available():
-                data, _ = [_.cuda() for _ in batch]
+                data = batch[0].cuda()
             else:
                 data = batch[0]
             k = self.args.way * self.args.shot
+            data_shot, data_query = data[:k], data[k:]
             data_shot, data_query = data[:k], data[k:]
             logits = self.model((data_shot, label_shot, data_query, True))
             predictions = F.softmax(logits, dim=1).argmax(dim=1)
