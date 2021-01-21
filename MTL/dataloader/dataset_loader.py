@@ -48,14 +48,14 @@ class DatasetLoader(Dataset):
             elif setname=='test':
                 THE_PATH = osp.join(dataset_dir, 'test')
                 label_list = os.listdir(THE_PATH)
-                with (osp.join(CLASS_NAMES_PATH, "test.json")) as file:
+                with open(osp.join(CLASS_NAMES_PATH, "test.json")) as file:
                     labels_dict = json.load(file)
                 if self.args.save_artifacts_dataset:
                     self.save_artifacts(dataset_name=dataset, folder_name=setname, folder_dir=THE_PATH)
             elif setname=='val':
                 THE_PATH = osp.join(dataset_dir, 'val')
                 label_list = os.listdir(THE_PATH)
-                with (osp.join(CLASS_NAMES_PATH, "val.json")) as file:
+                with open(osp.join(CLASS_NAMES_PATH, "val.json")) as file:
                     labels_dict = json.load(file)
                 if self.args.save_artifacts_dataset:
                     self.save_artifacts(dataset_name=dataset, folder_name=setname, folder_dir=THE_PATH)
