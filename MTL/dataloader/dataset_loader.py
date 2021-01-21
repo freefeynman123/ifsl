@@ -76,7 +76,7 @@ class DatasetLoader(Dataset):
             for image_path in this_folder_images:
                 data.append(osp.join(this_folder, image_path))
                 label.append(idx)
-                label_name.append(labels_dict[this_folder])
+                label_name.append(labels_dict[osp.basename(this_folder)])
 
         # Set data, label and class number to be accessable from outside
         self.data = data
