@@ -1,0 +1,46 @@
+program: main.py
+method: bayes
+metric:
+  goal: maximize
+  name: val_acc
+parameters:
+  base_lr:
+    distribution: uniform
+    max: 0.02
+    min: 0.005
+  gamma:
+    distribution: uniform
+    max: 1
+    min: 0.25
+  meta_lr1:
+    distribution: uniform
+    max: 0.0002
+    min: 5e-05
+  meta_lr2:
+    distribution: uniform
+    max: 0.002
+    min: 0.0005
+  num_workers:
+    values:
+      - 16
+    distribution: categorical
+  max_epoch:
+    values:
+      - 50
+    distribution: categorical
+  num_batch:
+    values:
+      - 50
+    distribution: categorical
+  require_index:
+    values:
+      - True
+    distribution: categorical
+  config:
+    values:
+      - "mini_1_resnet_baseline"
+    distribution: categorical
+  gpu:
+    values:
+      - "0"
+    distribution: categorical

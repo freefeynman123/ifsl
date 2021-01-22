@@ -24,13 +24,21 @@ parameters:
     values:
       - 16
     distribution: categorical
+  max_epoch:
+    values:
+      - 50
+    distribution: categorical
+  num_batch:
+    values:
+      - 50
+    distribution: categorical
   require_index:
     values:
       - True
     distribution: categorical
   config:
     values:
-      - "mini_1_resnet_baseline"
+      - "mini_5_resnet_baseline"
     distribution: categorical
   gpu:
     values:
