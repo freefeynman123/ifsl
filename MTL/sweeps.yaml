@@ -1,3 +1,4 @@
+program: main.py
 method: bayes
 metric:
   goal: maximize
@@ -22,7 +23,11 @@ parameters:
   num_workers:
     values:
       - 16
-      distribution: int_uniform
+    distribution: categorical
+  require_index:
+    values:
+      - True
+    distribution: categorical
   config:
     values:
       - "mini_1_resnet_baseline"
@@ -31,4 +36,3 @@ parameters:
     values:
       - "0"
     distribution: categorical
-program: main.py

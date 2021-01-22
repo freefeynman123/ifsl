@@ -69,6 +69,10 @@ WORKDIR /home/tclbot
 
 COPY requirements.txt /home/tclbot
 
+#Create symbolic link for python and change user permissions for /usr/bin
+RUN echo tcl | sudo -S ln -s /usr/bin/python3 /usr/bin/python && \
+    echo tcl | sudo -S chmod --changes -R a+rwx /usr/bin
+
 # Install basic python stack
 RUN pip3 install --upgrade pip && \
     pip3 install -U wandb && \

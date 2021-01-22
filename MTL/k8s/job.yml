@@ -33,11 +33,11 @@ spec:
             limits:
               cpu: "4"
               memory: "16Gi"
-              nvidia.com/gpu: 1
+              nvidia.com/gpu: 0
             requests:
               cpu: "4"
               memory: "16Gi"
-              nvidia.com/gpu: 1
+              nvidia.com/gpu: 0
           ports:
             - containerPort: 5000
           volumeMounts:
