@@ -20,27 +20,22 @@ parameters:
     distribution: uniform
     max: 0.002
     min: 0.0005
-  num_workers:
-    values:
-      - 16
-    distribution: categorical
-  max_epoch:
-    values:
-      - 50
-    distribution: categorical
-  num_batch:
-    values:
-      - 50
-    distribution: categorical
-  require_index:
-    values:
-      - True
-    distribution: categorical
-  config:
-    values:
-      - "mini_1_resnet_baseline"
-    distribution: categorical
-  gpu:
-    values:
-      - "0"
-    distribution: categorical
+command:
+  - ${env}
+  - ${interpreter}
+  - ${program}
+  - "-config"
+  - mini_1_resnet_baseline
+  - "require_index"
+  - True
+  - "-gpu"
+  - 0
+  - "num_batch"
+  - 50
+  - "max_epoch"
+  - 50
+  - "num_workers"
+  - 16
+  - "project_name"
+  - mtl_baseline
+  - ${args}
