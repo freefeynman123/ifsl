@@ -2,7 +2,7 @@ program: main.py
 method: bayes
 metric:
   goal: maximize
-  name: val_acc
+  name: val_acc_averager
 parameters:
   base_lr:
     distribution: uniform

@@ -364,8 +364,8 @@ class MetaTrainer(object):
             trlog['val_acc'].append(val_acc_averager)
 
             wandb.log(
-                {'train_loss': train_loss_averager, 'train_acc': train_acc_averager, 'val_loss': val_loss_averager,
-                 'val_acc':    val_acc_averager, "examples": images_to_log})
+                {'train_loss_averager': train_loss_averager, 'train_acc_averager': train_acc_averager,
+                 'val_loss_averager': val_loss_averager, 'val_acc_averager': val_acc_averager, "examples": images_to_log})
 
             # Save log
             torch.save(trlog, osp.join(self.args.save_path, 'trlog'))
