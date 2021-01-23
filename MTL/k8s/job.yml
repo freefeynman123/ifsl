@@ -20,7 +20,7 @@ spec:
         # Here go all containers that run within this pod
         - name: few-shot-learning
           # Required docker image
-          image: registry.gitlab.com/lukasz.bala.tcl/ifsl:mtl_v3
+          image: registry.gitlab.com/lukasz.bala.tcl/ifsl:mtl_v5
           env:
             - name: WANDB_API_KEY
               valueFrom:

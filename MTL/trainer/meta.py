@@ -337,7 +337,6 @@ class MetaTrainer(object):
                 wandb.Image(data, caption=f"Image with label name: {label_name} prediction name: {prediction_name}") for
                 data, loss, label_name, prediction_name in
                 zip(data_k, losses_k, label_names_k, prediction_names_k)]
-            wandb.log({"examples": images_to_log})
             # Write the tensorboardX records
             writer.add_scalar('data/val_loss', float(val_loss_averager), epoch)
             writer.add_scalar('data/val_loss', float(val_loss_averager), epoch)
@@ -366,7 +365,7 @@ class MetaTrainer(object):
 
             wandb.log(
                 {'train_loss': train_loss_averager, 'train_acc': train_acc_averager, 'val_loss': val_loss_averager,
-                 'val_acc':    val_acc_averager})
+                 'val_acc':    val_acc_averager, "examples": images_to_log})
 
             # Save log
             torch.save(trlog, osp.join(self.args.save_path, 'trlog'))
