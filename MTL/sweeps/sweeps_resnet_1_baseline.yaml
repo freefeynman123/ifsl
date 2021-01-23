@@ -24,18 +24,18 @@ command:
   - ${env}
   - ${interpreter}
   - ${program}
-  - "-config"
+  - "--config"
   - mini_1_resnet_baseline
-  - "require_index"
+  - "--require_index"
   - True
-  - "-gpu"
+  - "--gpu"
   - 0
-  - "num_batch"
+  - "--num_batch"
   - 50
-  - "max_epoch"
+  - "--max_epoch"
   - 50
-  - "num_workers"
+  - "--num_workers"
   - 16
-  - "project_name"
+  - "--project_name"
   - mtl_baseline
   - ${args}
