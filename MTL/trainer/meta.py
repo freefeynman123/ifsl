@@ -316,17 +316,17 @@ class MetaTrainer(object):
 
                     if i % print_freq == 0:
                         # Update validation averagers
-                        val_acc = val_loss_averager.item()
-                        val_acc_averager_item = val_acc_averager.item()
+                        val_loss_averager_item = val_loss_averager.item()
+                        val_acc = val_acc_averager.item()
                         # Write the tensorboardX records
                         writer.add_scalar('data/val_loss', float(val_loss_averager_item), epoch)
-                        writer.add_scalar('data/val_acc', float(val_acc_averager_item), epoch)
+                        writer.add_scalar('data/val_acc', float(val_acc), epoch)
                         # Print loss and accuracy for this epoch
                         print('Epoch {}, Val, Loss={:.4f} Acc={:.4f}'.format(epoch, val_loss_averager_item,
-                                                                             val_acc_averager_item))
+                                                                             val_acc))
 
             # Update validation averagers
-            val_acc = val_loss_averager.item()
+            val_loss_averager = val_loss_averager.item()
             val_acc = val_acc_averager.item()
             data_k, losses_k, labels_k, predictions_k, label_names_k, prediction_names_k = get_top_k_losses(
                 self.valset.data, val_losses, val_labels,
@@ -338,17 +338,17 @@ class MetaTrainer(object):
                 data, loss, label_name, prediction_name in
                 zip(data_k, losses_k, label_names_k, prediction_names_k)]
             # Write the tensorboardX records
-            writer.add_scalar('data/val_loss', float(val_acc), epoch)
-            writer.add_scalar('data/val_loss', float(val_acc), epoch)
+            writer.add_scalar('data/val_loss', float(val_loss_averager), epoch)
+            writer.add_scalar('data/val_loss', float(val_loss_averager_item), epoch)
             writer.add_scalar('data/val_acc', float(val_acc), epoch)
             # Print loss and accuracy for this epoch
-            msg = 'Epoch {}, Val, Loss={:.4f} Acc={:.4f}'.format(epoch, val_loss_averager, val_acc_averager)
+            msg = 'Epoch {}, Val, Loss={:.4f} Acc={:.4f}'.format(epoch, val_loss_averager, val_acc)
             print(msg)
             self.write_output_message(msg)
 
             # Update best saved model
-            if val_acc_averager > trlog['max_acc']:
-                trlog['max_acc'] = val_acc_averager
+            if val_acc > trlog['max_acc']:
+                trlog['max_acc'] = val_acc
                 trlog['max_acc_epoch'] = epoch
                 self.save_model('max_acc')
                 self.save_artifact('max_acc')
@@ -361,7 +361,7 @@ class MetaTrainer(object):
             trlog['train_loss'].append(train_loss_averager)
             trlog['train_acc'].append(train_acc_averager)
             trlog['val_loss'].append(val_loss_averager)
-            trlog['val_acc'].append(val_acc_averager)
+            trlog['val_acc'].append(val_acc)
 
             wandb.log(
                 {'train_loss': train_loss_averager, 'train_acc': train_acc_averager,
