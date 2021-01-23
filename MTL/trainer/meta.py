@@ -316,7 +316,7 @@ class MetaTrainer(object):
 
                     if i % print_freq == 0:
                         # Update validation averagers
-                        val_loss_averager_item = val_loss_averager.item()
+                        val_acc = val_loss_averager.item()
                         val_acc_averager_item = val_acc_averager.item()
                         # Write the tensorboardX records
                         writer.add_scalar('data/val_loss', float(val_loss_averager_item), epoch)
@@ -326,8 +326,8 @@ class MetaTrainer(object):
                                                                              val_acc_averager_item))
 
             # Update validation averagers
-            val_loss_averager = val_loss_averager.item()
-            val_acc_averager = val_acc_averager.item()
+            val_acc = val_loss_averager.item()
+            val_acc = val_acc_averager.item()
             data_k, losses_k, labels_k, predictions_k, label_names_k, prediction_names_k = get_top_k_losses(
                 self.valset.data, val_losses, val_labels,
                 val_predictions,
@@ -338,9 +338,9 @@ class MetaTrainer(object):
                 data, loss, label_name, prediction_name in
                 zip(data_k, losses_k, label_names_k, prediction_names_k)]
             # Write the tensorboardX records
-            writer.add_scalar('data/val_loss', float(val_loss_averager), epoch)
-            writer.add_scalar('data/val_loss', float(val_loss_averager), epoch)
-            writer.add_scalar('data/val_acc', float(val_acc_averager), epoch)
+            writer.add_scalar('data/val_loss', float(val_acc), epoch)
+            writer.add_scalar('data/val_loss', float(val_acc), epoch)
+            writer.add_scalar('data/val_acc', float(val_acc), epoch)
             # Print loss and accuracy for this epoch
             msg = 'Epoch {}, Val, Loss={:.4f} Acc={:.4f}'.format(epoch, val_loss_averager, val_acc_averager)
             print(msg)
@@ -364,8 +364,8 @@ class MetaTrainer(object):
             trlog['val_acc'].append(val_acc_averager)
 
             wandb.log(
-                {'train_loss_averager': train_loss_averager, 'train_acc_averager': train_acc_averager,
-                 'val_loss_averager': val_loss_averager, 'val_acc_averager': val_acc_averager, "examples": images_to_log})
+                {'train_loss': train_loss_averager, 'train_acc': train_acc_averager,
+                 'val_loss': val_loss_averager, 'val_acc': val_acc, "examples": images_to_log})
 
             # Save log
             torch.save(trlog, osp.join(self.args.save_path, 'trlog'))
