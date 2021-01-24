@@ -377,6 +377,9 @@ class MetaTrainer(object):
                 print('Running Time: {}, Estimated Time: {}'.format(timer.measure(),
                                                                     timer.measure(epoch / self.args.max_epoch)))
             early_stopping(val_loss_averager, self.model)
+            if early_stopping.early_stop:
+                print("Early stopping")
+                break
         writer.close()
 
     def eval(self):
