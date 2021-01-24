@@ -469,6 +469,9 @@ class MetaTrainer(object):
         print(msg)
         self.write_output_message(msg, test_case_name)
 
+        wandb.log(
+            {"ave_acc": ave_acc.item(), "hacc_top_k": hacc.get_topk_hard_acc()})
+
         if self.args.save_hacc:
             print("Saving hacc!")
             pickle.dump(hacc, open("hacc/" + test_case_name, "wb"))
