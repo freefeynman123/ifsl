@@ -27,6 +27,7 @@ import configs
 from utils.misc import pprint
 import pickle
 from utils.misc import progress_bar, get_top_k_losses
+from utils.early_stopping import EarlyStopping
 
 import wandb
 
@@ -193,6 +194,8 @@ class MetaTrainer(object):
         global_count = 0
         # Set tensorboardX
         writer = SummaryWriter(comment=self.args.save_path)
+        #Initializing early stopping class
+        early_stopping = EarlyStopping(patience=self.args.patience, verbose=True)
 
         # Generate the labels for train set of the episodes
         label_shot = torch.arange(self.args.way).repeat(self.args.shot)
@@ -373,6 +376,7 @@ class MetaTrainer(object):
             if epoch % 10 == 0:
                 print('Running Time: {}, Estimated Time: {}'.format(timer.measure(),
                                                                     timer.measure(epoch / self.args.max_epoch)))
+        early_stopping(val_loss_averager, self.model)
         writer.close()
 
     def eval(self):
@@ -414,7 +418,7 @@ class MetaTrainer(object):
                 add_path += "edsplit_"
             add_path += str(args.param.shot)
             self.add_path = add_path
-            self.model.load_state_dict(torch.load(self.args.save_path + 'max_acc.h5'))['params']
+            self.model.load_state_dict(torch.load(osp.join(self.args.save_path, 'max_acc.h5'))['params'])
         # Set model to eval mode
         self.model.eval()
 
