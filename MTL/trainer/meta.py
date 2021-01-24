@@ -94,9 +94,9 @@ class MetaTrainer(object):
         else:
             id = self.args.wandb_id
         if self.args.phase == 'meta_train':
-            self.run_train = wandb.init(project=self.args.project_name, id=id, resume="allow", job_type='train', entity=USER_NAME)
+            self.run_train = wandb.init(project=self.args.project_name, resume="allow", job_type='train', entity=USER_NAME)
         else:
-            self.run_eval = wandb.init(project=self.args.project_name, id=id, resume="allow", job_type='eval', entity=USER_NAME)
+            self.run_eval = wandb.init(project=self.args.project_name, resume="allow", job_type='eval', entity=USER_NAME)
         if self.args.wandb_id is not None:
             checkpoint = torch.load(wandb.restore("max_acc.pth").name)
             self.model.load_state_dict(checkpoint['model_state_dict'])
