@@ -1,8 +1,10 @@
+project: mtl_baseline
+entity: freefeynman123
 program: main.py
 method: bayes
 metric:
   goal: maximize
-  name: val_acc_averager
+  name: val_acc
 parameters:
   base_lr:
     distribution: uniform
