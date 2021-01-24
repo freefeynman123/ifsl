@@ -414,7 +414,7 @@ class MetaTrainer(object):
                 add_path += "edsplit_"
             add_path += str(args.param.shot)
             self.add_path = add_path
-            self.model.load_state_dict(torch.load(osp.join(base_path, add_path + '.pth'))['params'])
+            self.model.load_state_dict(torch.load(self.args.save_path + 'max_acc.h5'))['params']
         # Set model to eval mode
         self.model.eval()
 
