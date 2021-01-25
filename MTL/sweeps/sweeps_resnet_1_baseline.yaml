@@ -40,4 +40,6 @@ command:
   - 16
   - "--project_name"
   - mtl_baseline
+  - "--seed"
+  - 42
   - ${args}
