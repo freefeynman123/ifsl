@@ -477,5 +477,8 @@ class MetaTrainer(object):
 
         if self.args.save_hacc:
             print("Saving hacc!")
-            pickle.dump(hacc, open("hacc/" + test_case_name, "wb"))
+            dir_name = "hacc"
+            if not osp.exists(dir_name):
+                os.makedirs(dir_name)
+            pickle.dump(hacc, open(osp.join(dir_name, test_case_name), "wb"))
         print('Test Acc {:.4f} + {:.4f}'.format(m, pm))

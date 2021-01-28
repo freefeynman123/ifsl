@@ -1,8 +1,10 @@
+project: mtl_ifsl
+entity: freefeynman123
 program: main.py
 method: bayes
 metric:
   goal: maximize
-  name: val_acc_averager
+  name: val_acc
 parameters:
   base_lr:
     distribution: uniform
@@ -20,27 +22,24 @@ parameters:
     distribution: uniform
     max: 0.002
     min: 0.0005
-  num_workers:
-    values:
-      - 16
-    distribution: categorical
-  max_epoch:
-    values:
-      - 50
-    distribution: categorical
-  num_batch:
-    values:
-      - 50
-    distribution: categorical
-  require_index:
-    values:
-      - True
-    distribution: categorical
-  config:
-    values:
-      - "mini_5_resnet_d"
-    distribution: categorical
-  gpu:
-    values:
-      - "0"
-    distribution: categorical
+command:
+  - ${env}
+  - ${interpreter}
+  - ${program}
+  - "--config"
+  - mini_5_resnet_d
+  - "--require_index"
+  - True
+  - "--gpu"
+  - 0
+  - "--num_batch"
+  - 50
+  - "--max_epoch"
+  - 50
+  - "--num_workers"
+  - 16
+  - "--project_name"
+  - mtl_ifsl
+  - "--seed"
+  - 42
+  - ${args}
